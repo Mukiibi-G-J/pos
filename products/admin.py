@@ -8,6 +8,9 @@ class ModleAdmin(admin.ModelAdmin):
                     'unit_price', 'cost', 'reorder_level')
     search_fields = ('product_code', 'product_name')
     order_by = ('created_at')
+
+
+admin.site.site_header = "Semuna POS"
     
 
 

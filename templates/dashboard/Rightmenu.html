@@ -4,7 +4,7 @@
   <div
     class="iq-sidebar-logo d-flex align-items-center justify-content-between"
   >
-    <a href="../backend/index.html" class="header-logo">
+    <a href="{%url 'products:dashboard' %}" class="header-logo">
       <img
         src="{% static 'images/logo.png' %}"
         class="img-fluid rounded-normal light-logo"
@@ -20,7 +20,7 @@
     <nav class="iq-sidebar-menu">
       <ul id="iq-sidebar-toggle" class="iq-menu">
         <li class="active">
-          <a href="../backend/index.html" class="svg-icon">
+          <a href="{%url 'products:dashboard' %}" class="svg-icon">
             <svg
               class="svg-icon"
               id="p-dash1"
@@ -92,12 +92,12 @@
             data-parent="#iq-sidebar-toggle"
           >
             <li class="">
-              <a href="../backend/page-list-product.html">
+              <a href="{% url 'products:product_list' %}">
                 <i class="las la-minus"></i><span>List Product</span>
               </a>
             </li>
             <li class="">
-              <a href="../backend/page-add-product.html">
+              <a href="{% url 'products:add_product' %}">
                 <i class="las la-minus"></i><span>Add Product</span>
               </a>
             </li>
@@ -151,12 +151,12 @@
             data-parent="#iq-sidebar-toggle"
           >
             <li class="">
-              <a href="../backend/page-list-category.html">
+              <a href="{% url 'products:list_category' %}">
                 <i class="las la-minus"></i><span>List Category</span>
               </a>
             </li>
             <li class="">
-              <a href="../backend/page-add-category.html">
+              <a href="{% url 'products:add_category' %}">
                 <i class="las la-minus"></i><span>Add Category</span>
               </a>
             </li>
@@ -208,12 +208,12 @@
             data-parent="#iq-sidebar-toggle"
           >
             <li class="">
-              <a href="../backend/page-list-sale.html">
+              <a href="{% url 'products:list_sales'%}">
                 <i class="las la-minus"></i><span>List Sale</span>
               </a>
             </li>
             <li class="">
-              <a href="../backend/page-add-sale.html">
+              <a href="{% url 'products:add_sales'%}">
                 <i class="las la-minus"></i><span>Add Sale</span>
               </a>
             </li>
@@ -265,12 +265,12 @@
             data-parent="#iq-sidebar-toggle"
           >
             <li class="">
-              <a href="../backend/page-list-purchase.html">
+              <a href="{% url 'products:list_purchases' %}">
                 <i class="las la-minus"></i><span>List Purchases</span>
               </a>
             </li>
             <li class="">
-              <a href="../backend/page-add-purchase.html">
+              <a href="{% url 'products:add_purchases' %}">
                 <i class="las la-minus"></i><span>Add purchase</span>
               </a>
             </li>

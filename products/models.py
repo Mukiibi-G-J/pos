@@ -3,6 +3,7 @@ from tabnanny import verbose
 from django.db import models
 from django.contrib.auth.models  import User
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 class Brand(models.Model):
     brand_name = models.CharField(max_length=255)
@@ -16,7 +17,10 @@ class Product_Unit(models.Model):
         return self.unit_name
     
 class Category(models.Model):
-    catergory_name = models.CharField(max_length=255)
+    
+    category_id = models.CharField(max_length=255, unique=True)
+    category_name = models.CharField(max_length=255, unique=True)
+    category_image = models.ImageField(null=True, blank=True, default='images/default.png', upload_to='images/')
     
     def __str__(self):
         return self.catergory_name
@@ -47,3 +51,21 @@ class Products(models.Model):
     def __Str__(self):
         return self.product_name
         
+        
+        
+class Order(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    staff = models.ForeignKey(User, on_delete=models.CASCADE, null=True) 
+    order_quantity = models.PositiveIntegerField(null=True)
+    date = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = 'Order'
+        verbose_name_plural ='Orders'
+        db_table= 'Orders'
+        # ordering= ('-publish',)
+    
+    
+    def __str__(self):
+        return f"{self.product} ordered by {self.staff}"
+    
