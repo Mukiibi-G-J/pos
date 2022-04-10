@@ -11,7 +11,7 @@
               </div>
             </div>
             <div class="card-body">
-              <form action="page-list-category.html" data-toggle="validator">
+              <form method="post" data-toggle="validator">
                 {% csrf_token %} 
                 <div class="row">
                   
@@ -20,6 +20,7 @@
                       <label>Code *</label>
                       {{form.category_id}}
                       <div class="help-block with-errors"></div>
+                       <div class="help-block with-errors">{{error}}</div>
                     </div>
                   </div>
                   <div class="col-md-12">
@@ -33,12 +34,12 @@
                   <div class="col-md-12">
                     <div class="form-group">
                       <label>Image</label>
-                      {% comment %} <input
+                     <!--  {% comment %} <input
                         type="file"
                         class="form-control image-file"
                         name="pic"
                         accept="image/*"
-                      /> {% endcomment %}
+                      /> {% endcomment %} -->
                       {{ form.category_image }}
                     </div>
                   </div

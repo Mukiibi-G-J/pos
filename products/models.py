@@ -22,8 +22,13 @@ class Category(models.Model):
     category_name = models.CharField(max_length=255, unique=True)
     category_image = models.ImageField(null=True, blank=True, default='images/default.png', upload_to='images/')
     
+    class Meta:
+        db_table='Category'
+        verbose_name="Category"
+        verbose_name_plural='Categories'
+
     def __str__(self):
-        return self.catergory_name
+        return self.category_name
 class Products(models.Model):
     product_code = models.CharField(max_length=55,blank=False, null=False)
     # prouct_imgae = models.ImageField()

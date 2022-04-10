@@ -21,8 +21,18 @@ class ListCategory(generic.TemplateView):
 #     template_name = 'categories/add_cat.html'
 #    
 def AddCategory(request):
-    form =CategoryForm()
-    context={"form":form}
+    error=None
+    if request.method == "POST":
+        form = CategoryForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+        else:
+            error ='something went wrong'
+
+    else:
+        form =CategoryForm()
+    context={"form":form,
+            "error":error  }
     return render(request, 'categories/add_cat.html', context )
 
 class AddSale(generic.TemplateView):
