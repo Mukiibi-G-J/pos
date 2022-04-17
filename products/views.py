@@ -1,6 +1,7 @@
 from .form import CategoryForm
 from django.shortcuts import render
 from django.views import generic
+from .models import Category
 # Create your views here.
 
 
@@ -13,22 +14,29 @@ class AddProduct(generic.TemplateView):
 class ProductList(generic.TemplateView):
     template_name = 'products/prod_list.html'
 
-class ListCategory(generic.TemplateView):
-    template_name = 'categories/list_cat.html'
+# class ListCategory(generic.TemplateView):
+#     template_name = 'categories/list_cat.html'
     
 # class? AddCategory(generic.TemplateView):
     
 #     template_name = 'categories/add_cat.html'
-#    
+#
+def list_category(request): 
+    categories = Category.objects.all()
+    context={
+        'categories': categories
+    }
+
+    return render(request, 'categories/list_cat.html', context)
+       
 def AddCategory(request):
-    error=None
+    error= None
     if request.method == "POST":
-        form = CategoryForm(data=request.POST)
+        form = CategoryForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
         else:
-            error ='something went wrong'
-
+            error=form.errors
     else:
         form =CategoryForm()
     context={"form":form,

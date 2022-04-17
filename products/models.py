@@ -17,11 +17,9 @@ class Product_Unit(models.Model):
         return self.unit_name
     
 class Category(models.Model):
-    
-    category_id = models.CharField(max_length=255, unique=True)
-    category_name = models.CharField(max_length=255, unique=True)
-    category_image = models.ImageField(null=True, blank=True, default='images/default.png', upload_to='images/')
-    
+   
+    category_name = models.CharField(max_length=255, null=False, blank=False ,unique=True)
+    category_image = models.ImageField(null=True,  default='images/default.png', upload_to='images/')
     class Meta:
         db_table='Category'
         verbose_name="Category"
