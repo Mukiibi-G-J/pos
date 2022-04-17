@@ -1,8 +1,7 @@
-from .form import CategoryForm
+from .form import CategoryForm,AddProductForm
 from django.shortcuts import render
 from django.views import generic
 from .models import Category
-# Create your views here.
 
 
 def dashboard(request):
@@ -14,13 +13,15 @@ class AddProduct(generic.TemplateView):
 class ProductList(generic.TemplateView):
     template_name = 'products/prod_list.html'
 
-# class ListCategory(generic.TemplateView):
-#     template_name = 'categories/list_cat.html'
-    
-# class? AddCategory(generic.TemplateView):
-    
-#     template_name = 'categories/add_cat.html'
-#
+def addproduct(request):
+    form =AddProductForm()
+    context={
+    'form':form
+    }
+
+    return render(request, 'products/add_products.html', context)
+
+
 def list_category(request): 
     categories = Category.objects.all()
     context={

@@ -28,17 +28,20 @@ class Category(models.Model):
     def __str__(self):
         return self.category_name
 class Products(models.Model):
+    unit_name=(
+        ("pcs","PCS",),
+       ("dozen","DOZEN",),
+     )
     product_code = models.CharField(max_length=55,blank=False, null=False)
     # prouct_imgae = models.ImageField()
     product_name = models.CharField(max_length=255, blank=False, null=False)
-    unit_id = models.ForeignKey(Product_Unit, on_delete=models.CASCADE)
-    catergory_id = models.ForeignKey(Category, on_delete=models.CASCADE)
+    unit_id = models.CharField(max_length=255, choices=unit_name)
+    category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
     unit_in_stock = models.IntegerField(default=0, null=True)
     unit_price = models.FloatField(default=0)
     cost = models.FloatField(default=0)
     reorder_level = models.IntegerField(default=0, null=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     export_csv = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -30,33 +30,23 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Name *</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Enter Name"
-                      data-errors="Please Enter Name."
-                      required
-                    />
+                    
+                    {{ form.product_name }}
                     <div class="help-block with-errors"></div>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Code *</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Enter Code"
-                      data-errors="Please Enter Code."
-                      required
-                    />
+                   
+                    {{ form.product_code }}
                     <div class="help-block with-errors"></div>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Barcode Symbology *</label>
-                    <select
+                    <!-- <select
                       name="type"
                       class="selectpicker form-control"
                       data-style="py-0"
@@ -68,7 +58,8 @@
                       <option>FUN01</option>
                       <option>DIS01</option>
                       <option>NIS01</option>
-                    </select>
+                    </select> -->
+                    {{ form.category_id }}
                   </div>
                 </div>
                 <div class="col-md-6">
