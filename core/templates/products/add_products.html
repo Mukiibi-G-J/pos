@@ -1,0 +1,333 @@
+{% extends 'base/base.html' %} {% block content %} {% load widget_tweaks %}
+<div class="content-page">
+  <div class="container-fluid add-form-list">
+    <div class="row">
+      <!-- Extra large modal -->
+
+      {% if products %}
+     
+     <div
+     id="product_popup"
+     class="modal fade bd-example-modal-xl show"
+     tabindex="-1"
+     role="dialog"
+     aria-modal="true"
+     style="padding-right: 4px; display: block"
+   >
+     <div class="modal-dialog modal-xl  modal-dialog-scrollable" role="document" id="exampleModalCenter">
+       <div class="modal-content">
+         <div class="modal-header">
+           <h5 class="modal-title">Edit Uploaded data</h5>
+           <button
+           id="close_product_popup"
+             type="button"
+             class="close"
+             data-dismiss="modal"
+             aria-label="Close"
+           >
+             <span aria-hidden="true">×</span>
+           </button>
+         </div>
+         <div class="modal-body">
+          <div class="card">
+           <form action="{% url 'products:add_product_upload' %}" method="post">
+            {% csrf_token %}
+            <div class="card-header">
+              <button type="submit" class="btn btn-primary">Submit</button>
+
+            </div>
+            <div class="card-body">
+               <table class="table">
+                  <thead>
+                     <tr>
+                       <th scope="col">UUID</th>
+                        <th scope="col">Product Name</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Purchase Price</th>
+                        <th scope="col">Sales Price</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Unit</th>
+                        <th scope="col">Brand</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                  {% for product  in products %}
+                    <tr class="table-default">
+                      <th scope="row">
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="uuid"
+                          value="{{ product.uuid }}"
+                          readonly
+                        />
+                      <th scope="row">
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="product_name"
+                          value="{{ product.product_name }}"
+                        />
+                      </th>
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="description"
+                          value="{{ product.description }}"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="quantity"
+                          value="{{ product.quantity }}"
+                        />
+
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="purchase_price"
+                          value="{{ product.purchase_price }}"
+                        />
+
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="sales_price"
+                          value="{{ product.sales_price }}"
+                        />
+
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="category"
+                          value="{{ product.category }}"
+                        />
+
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="unit"
+                          value="{{ product.unit }}"
+                        />
+
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="brand"
+                          value="{{ product.brand }}"
+                        />
+
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+               </table>
+             
+            </div>
+            </form>
+         </div>
+         </div>
+        
+       </div>
+     </div>
+   </div>
+      {% endif %}
+
+      <div class="header-title">
+        <h4 class="card-title">Upload Execl File</h4>
+      </div>
+      <div class="input-group mb-4 mr-3 col-">
+        <form
+          class="d-flex"
+          method="post"
+          enctype="multipart/form-data"
+          action="{% url 'products:upload_products' %}"
+        >
+          {% csrf_token %}
+          <div class="custom-file">
+            {% render_field uploadform.file class="custom-file-input" id="inputGroupFile04" required="required" %}
+           
+            <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
+          </div>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary ml-4" type="submit">
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between">
+            <div class="header-title">
+              <h4 class="card-title">Add Product</h4>
+            </div>
+          </div>
+          <div class="card-body">
+            <form action="page-list-product.html" data-toggle="validator">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label>Product Type *</label>
+                    <select
+                      name="type"
+                      class="selectpicker form-control"
+                      data-style="py-0"
+                    >
+                      <option>Standard</option>
+                      <option>Combo</option>
+                      <option>Digital</option>
+                      <option>Service</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Name *</label>
+
+                    {{ form.product_name }}
+                    <div class="help-block with-errors"></div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Code *</label>
+
+                    {{ form.product_code }}
+                    <div class="help-block with-errors"></div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Barcode Symbology *</label>
+                    <!-- <select
+                      name="type"
+                      class="selectpicker form-control"
+                      data-style="py-0"
+                    >
+                      <option>CREM01</option>
+                      <option>UM01</option>
+                      <option>SEM01</option>
+                      <option>COF01</option>
+                      <option>FUN01</option>
+                      <option>DIS01</option>
+                      <option>NIS01</option>
+                    </select> -->
+                    {{ form.category_id }}
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Category *</label>
+                    <select
+                      name="type"
+                      class="selectpicker form-control"
+                      data-style="py-0"
+                    >
+                      <option>Beauty</option>
+                      <option>Grocery</option>
+                      <option>Food</option>
+                      <option>Furniture</option>
+                      <option>Shoes</option>
+                      <option>Frames</option>
+                      <option>Jewellery</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Cost *</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Enter Cost"
+                      data-errors="Please Enter Cost."
+                      required
+                    />
+                    <div class="help-block with-errors"></div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Price *</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Enter Price"
+                      data-errors="Please Enter Price."
+                      required
+                    />
+                    <div class="help-block with-errors"></div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label>Tax Method *</label>
+                    <select
+                      name="type"
+                      class="selectpicker form-control"
+                      data-style="py-0"
+                    >
+                      <option>Exclusive</option>
+                      <option>Inclusive</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label>Quantity *</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Enter Quantity"
+                      required
+                    />
+                    <div class="help-block with-errors"></div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label>Image</label>
+                    <input
+                      type="file"
+                      class="form-control image-file"
+                      name="pic"
+                      accept="image/*"
+                    />
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label>Description / Product Details</label>
+                    <textarea class="form-control" rows="4"></textarea>
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary mr-2">
+                Add Product
+              </button>
+              <button type="reset" class="btn btn-danger">Reset</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Page end  -->
+  </div>
+</div>
+
+{% endblock content %}
