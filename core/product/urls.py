@@ -17,5 +17,10 @@ urlpatterns = [
     path('add-sales', views.AddSale.as_view(), name='add_sales'),
     path('list_sales', views.ListSale.as_view(), name='list_sales'),
     path('add_purchases', views.AddPurchase.as_view(), name='add_purchases'),
-    path('list_purchases', views.ListPurchase.as_view(), name='list_purchases')
+    path('list_purchases', views.ListPurchase.as_view(), name='list_purchases'),
+    
+    
+    # utils
+    path('generate_barcode', views.generate_barcode, name='generate_barcode'),
+    path('get_product_by_uuid/<str:uuid>', views.get_product_by_uuid, name='get_product_by_uuid'),
 ]

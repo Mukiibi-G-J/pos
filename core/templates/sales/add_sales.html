@@ -79,6 +79,7 @@
               type="text"
               class="text search-input"
               placeholder="Search here..."
+              id ="search_product_uuid"
             />
           </form>
         </div>
@@ -86,30 +87,36 @@
           <div class="card">
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table">
+                <table class="table"  id="product__table" style="display: none;">
                   <thead>
                     <tr>
-                      <th scope="col">#</th>
+                      {% comment %} <th scope="col">#</th> {% endcomment %}
                       <th scope="col">Product ID</th>
                       <th scope="col">Product Name</th>
-                      <th scope="col">Unit Price</th>
-                      <th scope="col">Total Quantity</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Price</th>
+                      <th scope="col">Total Price</th>
+
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="product__table_body">
                     <tr>
-                      <th scope="row">1</th>
-                      <td>P100043r034590345</td>
-                      <td>Cell</td>
+                      {% comment %} <th scope="row" id="product_count"></th>
+                      <td id="product_uuid"></td>
+                      <td id="product_name"></td> {% endcomment %}
 
-                      <td>
+                      {% comment %} <td>
                         <input
                           type="text"
                           class="form-control"
                           placeholder="Quantity"
+                          id="product_quantity"
                         />
+                      </td> {% endcomment %}
+                      {% comment %} <td id="product_price">
+                       
                       </td>
-                      <td>Cell</td>
+                      <td id="product_total_price"></td> {% endcomment %}
                     </tr>
                   </tbody>
                 </table>

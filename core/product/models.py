@@ -31,7 +31,7 @@ class Products(models.Model):
         ("pcs","PCS",),
        ("dozen","DOZEN",),
      )
-    product_code = models.CharField(max_length=55,blank=False, null=False)
+    product_code = models.CharField(max_length=55,blank=False, null=False, unique=True)
     # prouct_imgae = models.ImageField()
     product_name = models.CharField(max_length=255, blank=False, null=False)
     description  = models.TextField(max_length=255, blank=False, null=False)

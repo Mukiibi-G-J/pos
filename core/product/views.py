@@ -1,17 +1,18 @@
 from product.form import CategoryForm,AddProductForm
 from django.shortcuts import render
 from django.views import generic
-from product.models import Category
+from product.models import *
 from django.http import JsonResponse
 from .form import FileUploadForm
 import pandas as pd
 # openpyxl
 from openpyxl import load_workbook
 import uuid
-
 from barcode import Code128
 from barcode.writer import ImageWriter
 import uuid
+from django.conf import settings
+import os
 
 
 
@@ -106,6 +107,8 @@ def upload_products(request):
                     df = df[1:]
                     # reset index
                     df = df.reset_index(drop=True)
+                    # drop nonwe in PURCHASE PRICE, SALES PRICE, QUANTITY, PRODUCT NAME
+                    df = df.dropna(subset=['PURCHASE PRICE', 'SALES PRICE', 'QUANTITY', 'PRODUCT NAME', 'CATEGORY', 'UNIT ID', 'BRAND'])
                     # get the first row as header
                     product_name = df['PRODUCT NAME'].tolist()
                     description = df['DESCRIPTION'].tolist()
@@ -147,6 +150,7 @@ def upload_products(request):
 
 
 def add_product_upload(request):
+    
     if request.method == 'POST':
         data = request.POST
         # get values form the dict
@@ -161,29 +165,65 @@ def add_product_upload(request):
             brand = request.POST.getlist('brand')
             uuid = request.POST.getlist('uuid')
             # print(product_name, description, quantity, purchase_price, sales_price, category, unit, brand, uuid)
-            for i in range(len(product_name)):
-                print(
-                    product_name=product_name[i],
-                    description=description[i],
-                    quantity=quantity[i],
-                    purchase_price=purchase_price[i],
-                    sales_price=sales_price[i],
-                    category=category[i],
-                    unit=unit[i],
-                    brand=brand[i],
-                    uuid=uuid[i]
-                )
-        # print(data)
-        # for  i in range(len(data.get('uuid'))):  
-        #     product_name = data.get('product_name')
-        #     description = data.get('description')
-        #     quantity = data.get('quantity')
-        #     purchase_price = data.get('purchase_price')
-        #     sales_price = data.get('sales_price')
-        #     category = data.get('category')
-        #     unit = data.get('unit')
-        #     brand = data.get('brand')
-        #     uuid = data.get('uuid')
-        #     print(product_name[i])
+        for (product_name, description, quantity, purchase_price, sales_price, category, unit, brand, uuid) in zip(product_name, description, quantity, purchase_price, sales_price, category, unit, brand, uuid):
+            print(product_name, description, quantity, purchase_price, sales_price, category, unit, brand, uuid)
+            # delte all prod
+            # Products.objects.all().delete()
+            # Category.objects.all().delete()
+            # Brand.objects.all().delete()
+            if Category.objects.filter(category_name=category).exists() == False:
+                category = Category.objects.create(category_name=category)
+                category.save()
+            else:
+                category = Category.objects.get(category_name=category)
+            
+            if  Brand.objects.filter(brand_name=brand).exists() == False:
+                brand = Brand.objects.create(brand_name=brand)
+                brand.save()
+            else:
+                brand = Brand.objects.get(brand_name=brand)
+                brand.save()
+                
+            products = Products.objects.create(
+                product_name = product_name,
+                description = description,
+                unit_in_stock = quantity,
+                unit_price = purchase_price,
+                cost = sales_price,
+                category_id = category,
+                unit_id = "1",
+                brand = brand,
+                product_code = uuid
+            )
+            products.save()
+
+                    
         return JsonResponse({'success':True})
     return JsonResponse({'success':False})        
+
+
+def generate_barcode(request):
+    product = Products.objects.all()
+    for uuid in product:
+        code = uuid.product_code
+        product_name = uuid.product_name.replace(' ', '_').replace('*','_')
+        barcode = Code128(code, writer=ImageWriter())
+        # save the barcode to a file in the images directory
+        image_dir = os.path.join(settings.BASE_DIR, 'images')
+        if not os.path.exists(image_dir):
+            os.makedirs(image_dir)
+        # change image name to product name
+        barcode.save(os.path.join(image_dir, product_name), options={'background': 'white', 'foreground': 'black'})
+    return JsonResponse({'success':True})
+
+
+def get_product_by_uuid(request, uuid):
+    if request.method == 'GET':
+        product = Products.objects.get(product_code=uuid)
+        data = {
+            'product_name':product.product_name,
+            'sales_price':product.cost,
+            'product_uuid':product.product_code,
+        }
+        return JsonResponse(data)
+    
