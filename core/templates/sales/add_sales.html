@@ -26,19 +26,22 @@
             tabindex="-1"
             role="dialog"
             aria-hidden="true"
+            id="product_popup_search"
           >
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-lg" >
               <div class="modal-content">
                 <div class="modal-header">
                   <div class="iq-search-bar device-search">
                     <form action="#" class="searchbox">
+                      {% csrf_token %}
                       <a class="search-link" href="#"
                         ><i class="ri-search-line"></i
                       ></a>
                       <input
                         type="text"
                         class="text search-input"
-                        placeholder="Search here..."
+                        placeholder="Search here......"
+                        id="search_product_by_name"
                       />
                     </form>
                   </div>
@@ -47,12 +50,15 @@
                     class="close"
                     data-dismiss="modal"
                     aria-label="Close"
+                    
                   >
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-                <div class="modal-body">
-                  <p>Modal body text goes here.</p>
+                <div class="modal-body container" id="results-box">
+                  
+
+              
                 </div>
                 {% comment %}
                 <div class="modal-footer">
@@ -80,6 +86,8 @@
               class="text search-input"
               placeholder="Search here..."
               id ="search_product_uuid"
+             
+              autocomplete="off"
             />
           </form>
         </div>
@@ -87,11 +95,11 @@
           <div class="card">
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table"  id="product__table" style="display: none;">
+                {% comment %} style="display: none;" {% endcomment %}
+                <table class="table"  id="product__table" >
                   <thead>
                     <tr>
                       {% comment %} <th scope="col">#</th> {% endcomment %}
-                      <th scope="col">Product ID</th>
                       <th scope="col">Product Name</th>
                       <th scope="col">Quantity</th>
                       <th scope="col">Price</th>

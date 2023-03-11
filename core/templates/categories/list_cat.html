@@ -6,15 +6,7 @@
         <div
           class="d-flex flex-wrap align-items-center justify-content-between mb-4"
         >
-          <div>
-            <h4 class="mb-3">Category List</h4>
-            <p class="mb-0">
-              Use category list as to describe your overall core business from
-              the provided list. <br />
-              Click the name of the category where you want to add a list item.
-              .
-            </p>
-          </div>
+         
           <a href="{% url 'products:add_category' %}" class="btn btn-primary add-list"
             ><i class="las la-plus mr-3"></i>Add Category</a
           >
@@ -35,8 +27,8 @@
                     <label for="checkbox1" class="mb-0"></label>
                   </div>
                 </th>
-                <th>Image</th>
-                <th>Code</th>
+                {% comment %} <th>Image</th>
+                <th>Code</th> {% endcomment %}
                 <th>Category</th>
                 <th>Action</th>
               </tr>
@@ -44,7 +36,7 @@
             <tbody class="ligth-body">
               {% for categories in categories %}
               <tr>
-                <td>
+                {% comment %} <td>
                   <div class="checkbox d-inline-block">
                     <input
                       type="checkbox"
@@ -53,8 +45,8 @@
                     />
                     <label for="checkbox2" class="mb-0"></label>
                   </div>
-                </td>
-                <td>
+                </td> {% endcomment %}
+                {% comment %} <td>
                   <div class="d-flex align-items-center">
                     {% if categories.category_image %}
                     <img
@@ -75,7 +67,7 @@
                       <p class="mb-0"><small>This is test Product</small></p>
                     </div>
                   </div>
-                </td>
+                </td> {% endcomment %}
                 <td>{{categories.category_id }}</td>
                 <td>{{categories.category_name }}</td>
                 <td>
