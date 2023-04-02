@@ -1,11 +1,15 @@
 from product.form import CategoryForm, AddProductForm
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
 from product.models import *
 from django.http import JsonResponse
 from .form import FileUploadForm
 import pandas as pd
 from django.views.decorators.csrf import csrf_exempt
+import json
+from django.db.models import F, Sum
+
+
 
 
 # openpyxl
@@ -19,7 +23,14 @@ import os
 
 
 def dashboard(request):
-    return render(request, "dashboard/dashboard.html")
+    # get the value of all your store products at cost price
+
+
+    total_cost = Products.objects.aggregate(total_cost=Sum(F('unit_price') * F('quantity_in_stock')))['total_cost']
+    # formatted_total_cost = '{:,.0f}'.format(total_cost)
+    formatted_total_cost = format(int(total_cost), ',d')
+    context = {"total_cost": formatted_total_cost}    
+    return render(request, "dashboard/dashboard.html", context)
 
 
 class AddProduct(generic.TemplateView):
@@ -68,6 +79,7 @@ def AddCategory(request):
     return render(request, "categories/add_cat.html", context)
 
 
+# ? ------------------------------------- sales -------------------------------------
 class AddSale(generic.View):
     template_name = "sales/add_sales.html"
 
@@ -79,9 +91,8 @@ class AddSale(generic.View):
         #! checkin if request is ajax
         # if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
         name = request.POST.get("product")
-        print(request.POST)
         res = None
-        
+
         qs = Products.objects.filter(product_name__icontains=name)
         data = []
         print(qs)
@@ -91,20 +102,75 @@ class AddSale(generic.View):
                     "code": i.product_code,
                     "name": i.product_name,
                     "price": i.cost,
-                    "description":i.description,
-
+                    "description": i.description,
                 }
                 data.append(item)
             res = data
         else:
             res = "No games found ........"
             return JsonResponse({"data": "Not found"}, status=400)
-        print(res)
         return JsonResponse({"data": res}, status=200)
 
 
-class ListSale(generic.TemplateView):
-    template_name = "sales/list_sales.html"
+def complete_sale(request):
+    if request.method == "POST":
+        print(request.POST['cart'])
+        cart = request.POST['cart']
+        # convert to json
+        cart_data = json.loads(cart)
+        
+
+
+        #convert to dictionary
+        # cart = eval(cart)
+        # loop through a dictionary
+        n = 0
+        for key, value in cart_data.items():
+            n+=1
+            print(n)
+            quantity = int(value['quantity'])
+            product_uuid = value['product_uuid']
+            total_price = (int(value['sales_price']))* int(quantity) -int(value['discount'])
+            discount = value['discount']
+            price = int(value['sales_price'])
+            user = request.user
+            print (quantity)
+            # get product by uuid and quantity
+            product = Products.objects.get(product_code=product_uuid)
+            # check if product quantity is less than quantity
+            if int(product.quantity_in_stock) < int(quantity):
+                print ("Not enough stock")
+                message = "Not enough stock"
+                
+                return JsonResponse({"data": "Not enough stock"}, status=400)
+            # create a sale
+            Sales.objects.create(
+                user=user,
+                product=product,
+                quantity=quantity,
+                total=total_price,
+                discount=discount,
+                price =price
+            )
+            #  redirect to sales list
+            redirect("products:list_sales")
+        
+    return JsonResponse({"data": "success"}, status=200)
+
+
+class ListSale(generic.View):
+    def get(self , request, *args, **kwargs):
+        sales = Sales.objects.all()
+        todays_total_sales = Sales.objects.filter(timestamp__date=datetime.date.today())
+        todays_total_sales = sum([sale.total for sale in todays_total_sales])
+        todays_total_sales = "{:,.0f}".format(todays_total_sales)
+                
+        context = {"sales": sales,
+                   "todays_total_sales": todays_total_sales
+                   
+                   }
+        return render(request, "sales/list_sales.html", context)
+
 
 
 class AddPurchase(generic.TemplateView):

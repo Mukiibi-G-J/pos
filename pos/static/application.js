@@ -5,6 +5,7 @@ const crf = document.getElementsByName("csrfmiddlewaretoken")[0].value;
 const resultsBox = document.getElementById("results-box");
 const product__table = document.getElementById("product__table");
 const delete_product_btn = document.getElementById("delete_product_btn");
+const submit_product = document.getElementById("submit__product");
 console.log(crf);
 
 const send_search_product = async (product) => {
@@ -104,10 +105,10 @@ function update_product_table() {
     // var product_row = document.createElement("tr");
     // // product_row.innerHTML = ` <td>${count}</td>`;
     product_row.innerHTML += ` <td>${product.product_name}</td>`;
-    product_row.innerHTML += ` <td> <input type="text" value="${product.quantity}" id="product_quantity_input" class="form-control" placeholder="Enter the quantity" /> </td>`;
+    product_row.innerHTML += ` <td> <input type="text" value="${product.quantity}" onblur="update_product_quantity('${product_uuid}')" id="product_quantity_input_${product_uuid}" class="form-control" placeholder="Enter the quantity" /> </td>`;
     product_row.innerHTML += ` <td> <input type="text" value="${product.sales_price}" id="product_price_input" class="form-control" placeholder="Enter the price" disabled /> </td>`;
     product_row.innerHTML += ` <td> <input type="text" value="${product.total_price}" id="product_total_price_input" class="form-control" placeholder="Enter the price" disabled /> </td>`;
-    product_row.innerHTML += ` <td>  <input type="text" value="${product.discount}" onblur="update_product_price('${product_uuid}')" id=${product_uuid} class="form-control" placeholder="Enter the discount" /> </td>`;
+    product_row.innerHTML += ` <td>  <input type="text" value="${product.discount}" onblur="update_product_price('${product_uuid}')" id='product_discount_input_${product_uuid}' class="form-control" placeholder="Enter the discount" /> </td>`;
     product_row.innerHTML += ` <td> <button class="btn btn-danger" id="delete_product_btn" onclick="delete_product('${product_uuid}')">Delete</button> </td>`;
 
     /// include the table header once
@@ -116,6 +117,7 @@ function update_product_table() {
     }
     product_table.appendChild(product_row);
   }
+  submit_product.style.display = "block";
 }
 
 //? querying for products
@@ -140,10 +142,14 @@ const send_search_product_uuid = async (product) => {
         // If the product exists, increment its quantity in the cart
         const cart = JSON.parse(localStorage.getItem("cart")) || {};
         if (cart[response.product_uuid]) {
-          cart[response.product_uuid].quantity++;
+          cart[response.product_uuid].quantity =
+            cart[response.product_uuid].quantity + 1;
+          // prettier-ignore
+          // This code will not be formatted by Prettier
           cart[response.product_uuid].total_price =
-            cart[response.product_uuid].quantity *
-            cart[response.product_uuid].sales_price;
+          (cart[response.product_uuid].quantity *  cart[response.product_uuid].sales_price) - cart[response.product_uuid].discount;
+          localStorage.setItem("cart", JSON.stringify(cart));
+          update_product_table();
         } else {
           cart[response.product_uuid] = {
             product_name: response.product_name,
@@ -154,6 +160,8 @@ const send_search_product_uuid = async (product) => {
             total_price: response.sales_price * 1,
             discount: 0,
           };
+          localStorage.setItem("cart", JSON.stringify(cart));
+          update_product_table();
         }
         localStorage.setItem("cart", JSON.stringify(cart));
       } else {
@@ -195,8 +203,12 @@ function send_search_product_uuid_from_popup(product) {
         if (cart[response.product_uuid]) {
           cart[response.product_uuid].quantity++;
           cart[response.product_uuid].total_price =
-            cart[response.product_uuid].quantity *
-            cart[response.product_uuid].sales_price;
+            // prettier-ignore
+            // This code will not be formatted by Prettier
+
+            (cart[response.product_uuid].quantity *  cart[response.product_uuid].sales_price) - cart[response.product_uuid].discount;
+          localStorage.setItem("cart", JSON.stringify(cart));
+          update_product_table();
         } else {
           cart[response.product_uuid] = {
             product_name: response.product_name,
@@ -207,6 +219,8 @@ function send_search_product_uuid_from_popup(product) {
             total_price: response.sales_price * 1,
             discount: 0,
           };
+          localStorage.setItem("cart", JSON.stringify(cart));
+          update_product_table();
         }
         localStorage.setItem("cart", JSON.stringify(cart));
       } else {
@@ -220,8 +234,6 @@ function send_search_product_uuid_from_popup(product) {
   });
 
   const product_popup_search = document.getElementById("product_popup_search");
-
-  
 
   // <div class="modal fade bd-example-modal-lg show" tabindex="-1" id="product_popup_search" style="display: block;" aria-modal="true" role="dialog">
 
@@ -275,7 +287,9 @@ function update_product_price(product_uuid) {
   e.preventDefault();
   const cart = JSON.parse(localStorage.getItem("cart")) || {};
   // geting the specific product row from the cart
-  const product_price_discount = document.getElementById(product_uuid).value;
+  const product_price_discount = document.getElementById(
+    `product_discount_input_${product_uuid}`
+  ).value;
 
   // check if it is a number
   if (isNaN(product_price_discount)) {
@@ -298,10 +312,11 @@ function update_product_price(product_uuid) {
       localStorage.setItem("cart", JSON.stringify(cart));
       update_product_table();
     } else {
-      cart[product_uuid].sales_price =
-        cart[product_uuid].sales_price - product_price_discount;
+      // cart[product_uuid].sales_price =
+      //   cart[product_uuid].sales_price - product_price_discount;
       cart[product_uuid].total_price =
-        cart[product_uuid].quantity * cart[product_uuid].sales_price;
+        cart[product_uuid].quantity * cart[product_uuid].sales_price -
+        product_price_discount;
       // set the current total price to the new total price
       const product_total_price_input = document.getElementById(
         "product_total_price_input"
@@ -311,5 +326,59 @@ function update_product_price(product_uuid) {
       localStorage.setItem("cart", JSON.stringify(cart));
       update_product_table();
     }
+  }
+}
+
+function update_product_quantity(product_uuid) {
+  e = window.event;
+  e.preventDefault();
+  const cart = JSON.parse(localStorage.getItem("cart")) || {};
+  const product_quantity = document.getElementById(
+    `product_quantity_input_${product_uuid}`
+  ).value;
+
+  if (isNaN(product_quantity)) {
+    alert("Please enter a valid number");
+  } else {
+    cart[product_uuid].quantity = product_quantity;
+    cart[product_uuid].total_price =
+      cart[product_uuid].quantity * cart[product_uuid].sales_price -
+      cart[product_uuid].discount;
+    localStorage.setItem("cart", JSON.stringify(cart));
+    update_product_table();
+  }
+}
+
+function submit__product() {
+  e = window.event;
+  e.preventDefault();
+
+  // get all the products in the cart
+  const cart = JSON.parse(localStorage.getItem("cart"));
+
+  // if no products in the cart then alert the user
+  if (cart == null) {
+    alert("Please add products to the cart");
+  } else {
+    $.ajax({
+      url: "/complete_sale",
+      type: "POST",
+      data: {
+        csrfmiddlewaretoken: crf,
+        cart: JSON.stringify(cart),
+      },
+      success: function (response) {
+        console.log(response);
+        if ((response.data = "success")) {
+          alert("Sale completed successfully");
+          localStorage.removeItem("cart");
+          update_product_table();
+          window.location.href = "/list_sales";
+        } else {
+          alert(response.data);
+          console.log(response.data);
+        }
+      },
+    });
   }
 }

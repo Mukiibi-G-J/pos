@@ -133,11 +133,11 @@
               
                 <td>{{ product.unit_price}}</td>
                 <td>{{ product.cost }}</td>
-                <td> {{ product.brand.brand_name }}}
-                  {% if product.unit_in_stock < product.reorder_level %}
-                <td class="text-danger">{{ product.unit_in_stock}}</td>
+                <td> {{ product.brand.brand_name }}</td>
+                  {% if product.quantity_in_stock < product.reorder_level %}
+                <td class="text-danger">{{ product.quantity_in_stock}}</td>
                 {% else %}
-                <td>{{ product.unit_in_stock}}</td>
+                <td>{{ product.quantity_in_stock}}</td>
                 {% endif %}
              
                 <td>

@@ -17,7 +17,7 @@
             class="btn btn-primary mt-2 mb-4 ml-3"
             data-toggle="modal"
             data-target=".bd-example-modal-lg"
-            id = "searh_modal_popup"
+            id="searh_modal_popup"
           >
             Search for Product
           </button>
@@ -28,7 +28,7 @@
             aria-hidden="true"
             id="product_popup_search"
           >
-            <div class="modal-dialog modal-lg" >
+            <div class="modal-dialog modal-lg">
               <div class="modal-content">
                 <div class="modal-header">
                   <div class="iq-search-bar device-search">
@@ -50,16 +50,11 @@
                     class="close"
                     data-dismiss="modal"
                     aria-label="Close"
-                    
                   >
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-                <div class="modal-body container" id="results-box">
-                  
-
-              
-                </div>
+                <div class="modal-body container" id="results-box"></div>
                 {% comment %}
                 <div class="modal-footer">
                   <button
@@ -85,8 +80,7 @@
               type="text"
               class="text search-input"
               placeholder="Search here..."
-              id ="search_product_uuid"
-             
+              id="search_product_uuid"
               autocomplete="off"
             />
           </form>
@@ -96,39 +90,50 @@
             <div class="card-body">
               <div class="table-responsive">
                 {% comment %} style="display: none;" {% endcomment %}
-                <table class="table"  id="product__table" >
+                <table class="table" id="product__table">
                   <thead>
                     <tr>
-                      {% comment %} <th scope="col">#</th> {% endcomment %}
+                      {% comment %}
+                      <th scope="col">#</th>
+                      {% endcomment %}
                       <th scope="col">Product Name</th>
                       <th scope="col">Quantity</th>
                       <th scope="col">Price</th>
                       <th scope="col">Total Price</th>
-
                     </tr>
                   </thead>
                   <tbody id="product__table_body">
                     <tr>
-                      {% comment %} <th scope="row" id="product_count"></th>
+                      {% comment %}
+                      <th scope="row" id="product_count"></th>
                       <td id="product_uuid"></td>
-                      <td id="product_name"></td> {% endcomment %}
-
-                      {% comment %} <td>
+                      <td id="product_name"></td>
+                      {% endcomment %} {% comment %}
+                      <td>
                         <input
                           type="text"
                           class="form-control"
                           placeholder="Quantity"
                           id="product_quantity"
                         />
-                      </td> {% endcomment %}
-                      {% comment %} <td id="product_price">
-                       
                       </td>
-                      <td id="product_total_price"></td> {% endcomment %}
+                      {% endcomment %} {% comment %}
+                      <td id="product_price"></td>
+                      <td id="product_total_price"></td>
+                      {% endcomment %}
                     </tr>
                   </tbody>
                 </table>
               </div>
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="submit__product"
+                style="display: none;"
+                onclick="submit__product()"
+              >
+                Submit
+              </button>
             </div>
           </div>
         </div>

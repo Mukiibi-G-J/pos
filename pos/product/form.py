@@ -47,7 +47,7 @@ class AddProductForm(ModelForm):
             "product_code",
             "product_name",
             "category_id",
-            "unit_in_stock",
+            "quantity_in_stock",
             "unit_price",
             "cost",
             "reorder_level",

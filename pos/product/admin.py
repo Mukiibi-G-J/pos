@@ -20,6 +20,7 @@ class ModleAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Brand)
 admin.site.register(models.Product_Unit)
+admin.site.register(models.Sales)
 
 
 
@@ -61,6 +62,9 @@ class CategoryAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         new_urls = [path('upload-csv/', self.upload_csv)]
         return new_urls + urls
+
+
+
 
 
 
