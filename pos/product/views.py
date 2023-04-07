@@ -2,12 +2,16 @@ from product.form import CategoryForm, AddProductForm
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
 from product.models import *
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 from .form import FileUploadForm
 import pandas as pd
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.db.models import F, Sum
+from django.template.loader import render_to_string
+from django.views.generic import View
+import io
+from xhtml2pdf import pisa
 
 
 
@@ -28,8 +32,23 @@ def dashboard(request):
 
     total_cost = Products.objects.aggregate(total_cost=Sum(F('unit_price') * F('quantity_in_stock')))['total_cost']
     # formatted_total_cost = '{:,.0f}'.format(total_cost)
+    total_cost_at_selling_price = Products.objects.aggregate(total_cost=Sum(F('cost') * F('quantity_in_stock')))['total_cost']
+    total_cost_of_sales = Sales.objects.aggregate(total_cost=Sum(F('total')))['total_cost']
     formatted_total_cost = format(int(total_cost), ',d')
-    context = {"total_cost": formatted_total_cost}    
+    foramtted_total_cost_at_selling_price= format(int(total_cost_at_selling_price), ',d')
+    total_no_of_products = Products.objects.all().count()
+    total_no_of_sales = Sales.objects.all().count()
+    sales_of_yesterday = Sales.objects.filter(timestamp__date=datetime.date.today() - datetime.timedelta(days=1)).aggregate(total_sales=Sum(F('total')))['total_sales']
+    # value_if_true if condition else value_if_false
+    total_sales_of_yesterday = sales_of_yesterday if  sales_of_yesterday else 0
+
+    context = {"total_cost": formatted_total_cost,
+               "total_cost_at_selling_price":foramtted_total_cost_at_selling_price,
+              "total_sales_of_yesterday":format(int(total_sales_of_yesterday), ',d'),
+              "total_no_of_products": total_no_of_products,
+              "total_no_of_sales": total_no_of_sales,
+              "total_cost_of_sales": format(int(total_cost_of_sales), ',d'),
+               }   
     return render(request, "dashboard/dashboard.html", context)
 
 
@@ -112,37 +131,74 @@ class AddSale(generic.View):
         return JsonResponse({"data": res}, status=200)
 
 
-def complete_sale(request):
-    if request.method == "POST":
-        print(request.POST['cart'])
-        cart = request.POST['cart']
-        # convert to json
-        cart_data = json.loads(cart)
+# def complete_sale(request):
+#     if request.method == "POST":
+#         print(request.POST['cart'])
+#         cart = request.POST['cart']
+#         # convert to json
+#         cart_data = json.loads(cart)
         
 
 
-        #convert to dictionary
-        # cart = eval(cart)
+#         #convert to dictionary
+#         # cart = eval(cart)
+#         # loop through a dictionary
+#         n = 0
+#         for key, value in cart_data.items():
+#             n+=1
+#             print(n)
+#             quantity = int(value['quantity'])
+#             product_uuid = value['product_uuid']
+#             total_price = (int(value['sales_price']))* int(quantity) -int(value['discount'])
+#             discount = value['discount']
+#             price = int(value['sales_price'])
+#             user = request.user
+#             print (quantity)
+#             # get product by uuid and quantity
+#             product = Products.objects.get(product_code=product_uuid)
+#             # check if product quantity is less than quantity
+#             if int(product.quantity_in_stock) < int(quantity):
+#                 print ("Not enough stock")
+#                 message = "Not enough stock"
+                
+#                 return JsonResponse({"data": "Not enough stock"}, status=400)
+#             # create a sale
+#             Sales.objects.create(
+#                 user=user,
+#                 product=product,
+#                 quantity=quantity,
+#                 total=total_price,
+#                 discount=discount,
+#                 price =price
+#             )
+#             #  redirect to sales list
+#             redirect("products:list_sales")
+        
+#     return JsonResponse({"data": "success"}, status=200)
+
+
+
+def complete_sale(request):
+    if request.method == "POST":
+        cart = request.POST['cart']
+        # convert to json
+        cart_data = json.loads(cart)
+
         # loop through a dictionary
-        n = 0
         for key, value in cart_data.items():
-            n+=1
-            print(n)
             quantity = int(value['quantity'])
             product_uuid = value['product_uuid']
             total_price = (int(value['sales_price']))* int(quantity) -int(value['discount'])
             discount = value['discount']
             price = int(value['sales_price'])
             user = request.user
-            print (quantity)
+
             # get product by uuid and quantity
             product = Products.objects.get(product_code=product_uuid)
             # check if product quantity is less than quantity
             if int(product.quantity_in_stock) < int(quantity):
-                print ("Not enough stock")
                 message = "Not enough stock"
-                
-                return JsonResponse({"data": "Not enough stock"}, status=400)
+                return JsonResponse({"data": message}, status=400)
             # create a sale
             Sales.objects.create(
                 user=user,
@@ -150,12 +206,27 @@ def complete_sale(request):
                 quantity=quantity,
                 total=total_price,
                 discount=discount,
-                price =price
+                price=price
             )
-            #  redirect to sales list
-            redirect("products:list_sales")
-        
-    return JsonResponse({"data": "success"}, status=200)
+
+        # generate receipt PDF
+        template_path = 'receipt.html'
+        context = {
+            'cart_data': cart_data,
+            'datetime': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="receipt.pdf"'
+        template = get_template(template_path)
+        html = template.render(context)
+        pdf_file = open(settings.MEDIA_ROOT + '/receipts/receipt.pdf', 'wb')
+        pisa_status = pisa.CreatePDF(html, dest=pdf_file)
+        pdf_file.close()
+        return response
+    else:
+        return JsonResponse({"data": "Invalid request method"}, status=400)
+
+
 
 
 class ListSale(generic.View):

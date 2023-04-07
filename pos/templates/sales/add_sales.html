@@ -73,7 +73,9 @@
             </div>
           </div>
         </div>
-        <div class="iq-search-bar device-search mb-4 ml-3">
+        <div
+          class="iq-search-bar device-search mb-4 ml-3 d-flex justify-content-lg-between"
+        >
           <form action="#" class="searchbox">
             <a class="search-link" href="#"><i class="ri-search-line"></i></a>
             <input
@@ -84,6 +86,7 @@
               autocomplete="off"
             />
           </form>
+          <button id="clear__cart" type="button" class="btn btn-primary ml-8">clear Cart</button>
         </div>
         <div class="col-sm-12">
           <div class="card">
@@ -129,7 +132,7 @@
                 type="button"
                 class="btn btn-primary"
                 id="submit__product"
-                style="display: none;"
+                style="display: none"
                 onclick="submit__product()"
               >
                 Submit

@@ -6,7 +6,24 @@ const resultsBox = document.getElementById("results-box");
 const product__table = document.getElementById("product__table");
 const delete_product_btn = document.getElementById("delete_product_btn");
 const submit_product = document.getElementById("submit__product");
-console.log(crf);
+const clear__cart = document.getElementById("clear__cart");
+const add_sales_link = document.getElementById("add_sales_link");
+window.onload = function () {
+  document.getElementById("search_product_uuid").focus();
+};
+add_sales_link.addEventListener("click", function (event) {
+  event.preventDefault();
+  console.log("likde")
+  window.location.href = "/add_sales?#";
+});
+
+clear__cart.addEventListener("click", function (event) {
+  event.preventDefault();
+  /// reload the page after clearing the cart
+  localStorage.removeItem("cart");
+  update_product_table();
+  window.location.reload();
+});
 
 const send_search_product = async (product) => {
   $.ajax({

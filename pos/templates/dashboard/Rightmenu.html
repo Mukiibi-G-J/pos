@@ -13,13 +13,30 @@
       <h5 class="logo-title light-logo ml-3">POSDash</h5>
     </a>
     <div class="iq-menu-bt-sidebar ml-0">
-      <i class="las la-bars wrapper-menu"></i>
+      <i class="las la-bars wrapper-menu">
+        <svg
+          class="svg-icon"
+          id="menu-icon"
+          width="20"
+          height="20"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M2,18 L22,18 M2,12 L22,12 M2,6 L22,6"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </i>
     </div>
   </div>
   <div class="data-scrollbar" data-scroll="1">
     <nav class="iq-sidebar-menu">
       <ul id="iq-sidebar-toggle" class="iq-menu">
-        {% if request.user.is_superuser  and request.user.is_authenticated %}
+        {% if request.user.is_superuser and request.user.is_authenticated %}
         <li class="active">
           <a href="{%url 'products:dashboard' %}" class="svg-icon">
             <svg
@@ -363,7 +380,7 @@
               </a>
             </li>
             <li class="">
-              <a href="/add_sales?#">
+              <a href="/add_sales?#" id="add_sales_link">
                 <i class="las la-minus"></i><span>Add Sale</span>
               </a>
             </li>
@@ -371,25 +388,7 @@
         </li>
       </ul>
     </nav>
-    <div id="sidebar-bottom" class="position-relative sidebar-bottom">
-      <div class="card border-none">
-        <div class="card-body p-0">
-          <div class="sidebarbottom-content">
-            <div class="image">
-              <img
-                src="{% static 'images/layouts/side-bkg.png' %}"
-                class="img-fluid"
-                alt="side-bkg"
-              />
-            </div>
-            <h6 class="mt-4 px-4 body-title">Get More Feature by Upgrading</h6>
-            <button type="button" class="btn sidebar-bottom-btn mt-4">
-              Go Premium
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+
     <div class="p-3"></div>
   </div>
 </div>
