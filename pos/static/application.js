@@ -8,12 +8,46 @@ const delete_product_btn = document.getElementById("delete_product_btn");
 const submit_product = document.getElementById("submit__product");
 const clear__cart = document.getElementById("clear__cart");
 const add_sales_link = document.getElementById("add_sales_link");
+
+// Set up variables to track the start and end of the barcode input
+let barcodeStart = false;
+let barcodeData = "";
+
+// Listen for keyboard input events on the whole page
+window.addEventListener("keydown", (event) => {
+  // Check if the input event is coming from the barcode scanner
+  if (event.code === "BarcodeScanner" || event.code === "Enter") {
+    // Set the barcode start flag to true
+    barcodeStart = true;
+  }
+  // Check if the barcode start flag is true and the input event is not the enter key
+  else if (barcodeStart && event.code !== "Enter") {
+    // Append the input event value to the barcode data
+
+    barcodeData += event.key;
+  }
+});
+
+// Listen for key up events to check if the barcode input is complete
+window.addEventListener("keyup", (event) => {
+  // Check if the input event is the enter key
+  if (event.code === "Enter") {
+    // Push the barcode data to the input field
+
+    document.getElementById("search_product_uuid").focus();
+
+    // Reset the barcode start flag and barcode data variables
+    barcodeStart = false;
+    barcodeData = "";
+  }
+});
+
 window.onload = function () {
   document.getElementById("search_product_uuid").focus();
 };
 add_sales_link.addEventListener("click", function (event) {
   event.preventDefault();
-  console.log("likde")
+  console.log("likde");
   window.location.href = "/add_sales?#";
 });
 
