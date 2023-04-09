@@ -387,6 +387,8 @@ function delete_product(product_uuid) {
   const cart = JSON.parse(localStorage.getItem("cart")) || {};
   delete cart[product_uuid];
   localStorage.setItem("cart", JSON.stringify(cart));
+  amount_received.value = "";
+  current_change.innerHTML = "";
   update_product_table();
   get_total_price();
 }
