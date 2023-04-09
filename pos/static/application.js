@@ -8,6 +8,7 @@ const delete_product_btn = document.getElementById("delete_product_btn");
 const submit_product = document.getElementById("submit__product");
 const clear__cart = document.getElementById("clear__cart");
 const add_sales_link = document.getElementById("add_sales_link");
+const current_total_price = document.getElementById("current_total_price");
 
 // Set up variables to track the start and end of the barcode input
 let barcodeStart = false;
@@ -58,6 +59,27 @@ clear__cart.addEventListener("click", function (event) {
   update_product_table();
   window.location.reload();
 });
+// geting to price of products in the cart
+function get_total_price() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || {};
+  let total_price = 0;
+  for (const product_uuid in cart) {
+    const product = cart[product_uuid];
+    const discount = product.discount;
+    if (discount > 0) {
+      total_price += product.total_price 
+    } else {
+      total_price += product.total_price;
+    }
+  }
+
+  // convert to total price to string and comma separated
+  total_price = total_price.toLocaleString();
+  // set to the  current total price with a new value
+
+  current_total_price.innerHTML = total_price;
+  // return total_price;
+}
 
 const send_search_product = async (product) => {
   $.ajax({
@@ -201,6 +223,7 @@ const send_search_product_uuid = async (product) => {
           (cart[response.product_uuid].quantity *  cart[response.product_uuid].sales_price) - cart[response.product_uuid].discount;
           localStorage.setItem("cart", JSON.stringify(cart));
           update_product_table();
+          get_total_price();
         } else {
           cart[response.product_uuid] = {
             product_name: response.product_name,
@@ -213,6 +236,7 @@ const send_search_product_uuid = async (product) => {
           };
           localStorage.setItem("cart", JSON.stringify(cart));
           update_product_table();
+          get_total_price();
         }
         localStorage.setItem("cart", JSON.stringify(cart));
       } else {
@@ -260,6 +284,7 @@ function send_search_product_uuid_from_popup(product) {
             (cart[response.product_uuid].quantity *  cart[response.product_uuid].sales_price) - cart[response.product_uuid].discount;
           localStorage.setItem("cart", JSON.stringify(cart));
           update_product_table();
+          get_total_price();
         } else {
           cart[response.product_uuid] = {
             product_name: response.product_name,
@@ -272,6 +297,7 @@ function send_search_product_uuid_from_popup(product) {
           };
           localStorage.setItem("cart", JSON.stringify(cart));
           update_product_table();
+          get_total_price();
         }
         localStorage.setItem("cart", JSON.stringify(cart));
       } else {
@@ -300,6 +326,7 @@ search_product_uuid.addEventListener("keyup", function (event) {
     send_search_product_uuid(event.target.value);
     search_product_uuid.value = "";
     update_product_table();
+    get_total_price();
   }
   //! set search_product_uuid empty and focus in it
   search_product_uuid.focus;
@@ -331,6 +358,7 @@ function delete_product(product_uuid) {
   delete cart[product_uuid];
   localStorage.setItem("cart", JSON.stringify(cart));
   update_product_table();
+  get_total_price();
 }
 
 function update_product_price(product_uuid) {
@@ -362,6 +390,7 @@ function update_product_price(product_uuid) {
       product_total_price_input.value = cart[product_uuid].total_price;
       localStorage.setItem("cart", JSON.stringify(cart));
       update_product_table();
+      get_total_price();
     } else {
       // cart[product_uuid].sales_price =
       //   cart[product_uuid].sales_price - product_price_discount;
@@ -376,6 +405,7 @@ function update_product_price(product_uuid) {
 
       localStorage.setItem("cart", JSON.stringify(cart));
       update_product_table();
+      get_total_price();
     }
   }
 }
@@ -397,6 +427,7 @@ function update_product_quantity(product_uuid) {
       cart[product_uuid].discount;
     localStorage.setItem("cart", JSON.stringify(cart));
     update_product_table();
+    get_total_price();
   }
 }
 

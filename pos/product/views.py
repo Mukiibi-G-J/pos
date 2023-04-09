@@ -131,74 +131,37 @@ class AddSale(generic.View):
         return JsonResponse({"data": res}, status=200)
 
 
-# def complete_sale(request):
-#     if request.method == "POST":
-#         print(request.POST['cart'])
-#         cart = request.POST['cart']
-#         # convert to json
-#         cart_data = json.loads(cart)
-        
-
-
-#         #convert to dictionary
-#         # cart = eval(cart)
-#         # loop through a dictionary
-#         n = 0
-#         for key, value in cart_data.items():
-#             n+=1
-#             print(n)
-#             quantity = int(value['quantity'])
-#             product_uuid = value['product_uuid']
-#             total_price = (int(value['sales_price']))* int(quantity) -int(value['discount'])
-#             discount = value['discount']
-#             price = int(value['sales_price'])
-#             user = request.user
-#             print (quantity)
-#             # get product by uuid and quantity
-#             product = Products.objects.get(product_code=product_uuid)
-#             # check if product quantity is less than quantity
-#             if int(product.quantity_in_stock) < int(quantity):
-#                 print ("Not enough stock")
-#                 message = "Not enough stock"
-                
-#                 return JsonResponse({"data": "Not enough stock"}, status=400)
-#             # create a sale
-#             Sales.objects.create(
-#                 user=user,
-#                 product=product,
-#                 quantity=quantity,
-#                 total=total_price,
-#                 discount=discount,
-#                 price =price
-#             )
-#             #  redirect to sales list
-#             redirect("products:list_sales")
-        
-#     return JsonResponse({"data": "success"}, status=200)
-
-
-
 def complete_sale(request):
     if request.method == "POST":
+        print(request.POST['cart'])
         cart = request.POST['cart']
         # convert to json
         cart_data = json.loads(cart)
+        
 
+
+        #convert to dictionary
+        # cart = eval(cart)
         # loop through a dictionary
+        n = 0
         for key, value in cart_data.items():
+            n+=1
+            print(n)
             quantity = int(value['quantity'])
             product_uuid = value['product_uuid']
             total_price = (int(value['sales_price']))* int(quantity) -int(value['discount'])
             discount = value['discount']
             price = int(value['sales_price'])
             user = request.user
-
+            print (quantity)
             # get product by uuid and quantity
             product = Products.objects.get(product_code=product_uuid)
             # check if product quantity is less than quantity
             if int(product.quantity_in_stock) < int(quantity):
+                print ("Not enough stock")
                 message = "Not enough stock"
-                return JsonResponse({"data": message}, status=400)
+                
+                return JsonResponse({"data": "Not enough stock"}, status=400)
             # create a sale
             Sales.objects.create(
                 user=user,
@@ -206,25 +169,16 @@ def complete_sale(request):
                 quantity=quantity,
                 total=total_price,
                 discount=discount,
-                price=price
+                price =price
             )
+            #  redirect to sales list
+            redirect("products:list_sales")
+        
+    return JsonResponse({"data": "success"}, status=200)
 
-        # generate receipt PDF
-        template_path = 'receipt.html'
-        context = {
-            'cart_data': cart_data,
-            'datetime': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        }
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="receipt.pdf"'
-        template = get_template(template_path)
-        html = template.render(context)
-        pdf_file = open(settings.MEDIA_ROOT + '/receipts/receipt.pdf', 'wb')
-        pisa_status = pisa.CreatePDF(html, dest=pdf_file)
-        pdf_file.close()
-        return response
-    else:
-        return JsonResponse({"data": "Invalid request method"}, status=400)
+
+
+
 
 
 
