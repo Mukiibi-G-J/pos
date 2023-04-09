@@ -9,6 +9,7 @@ const submit_product = document.getElementById("submit__product");
 const clear__cart = document.getElementById("clear__cart");
 const add_sales_link = document.getElementById("add_sales_link");
 const current_total_price = document.getElementById("current_total_price");
+const amount_received = document.getElementById("amount_received");
 
 // Set up variables to track the start and end of the barcode input
 let barcodeStart = false;
@@ -59,6 +60,7 @@ clear__cart.addEventListener("click", function (event) {
   update_product_table();
   window.location.reload();
 });
+
 // geting to price of products in the cart
 function get_total_price() {
   const cart = JSON.parse(localStorage.getItem("cart")) || {};
@@ -67,7 +69,7 @@ function get_total_price() {
     const product = cart[product_uuid];
     const discount = product.discount;
     if (discount > 0) {
-      total_price += product.total_price 
+      total_price += product.total_price;
     } else {
       total_price += product.total_price;
     }
@@ -78,8 +80,36 @@ function get_total_price() {
   // set to the  current total price with a new value
 
   current_total_price.innerHTML = total_price;
-  // return total_price;
+  return total_price;
 }
+amount_received.addEventListener("keyup", function (event) {
+  const input = event.target;
+  event.preventDefault();
+  // Remove non-numeric characters
+  let value = input.value.replace(/\D/g, "");
+
+  // Convert to number and format with commas
+  value = Number(value).toLocaleString();
+
+  // Update the input value
+  input.value = value;
+});
+amount_received.addEventListener("blur", function (event) {
+  event.preventDefault();
+  const amount_received = document.getElementById("amount_received").value;
+  // remove the comma from the amount received
+  const amount_received_without_comma = amount_received.replace(/,/g, "");
+  // convert the amount received to number
+  const amount_received_number = Number(amount_received_without_comma);
+  const total_price = get_total_price();
+  //remove the comma from the total price
+  const total_price_without_comma = total_price.replace(/,/g, "");
+  // convert the total price to number
+  const total_price_number = Number(total_price_without_comma);
+  const change = amount_received_number - total_price_number;
+  const change_with_comma = change.toLocaleString();
+  document.getElementById("current_change").innerHTML = change_with_comma;
+});
 
 const send_search_product = async (product) => {
   $.ajax({

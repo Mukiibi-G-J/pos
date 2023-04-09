@@ -104,6 +104,7 @@
               placeholder="Search here..."
               id="search_product_uuid"
               autocomplete="off"
+              onkeyup="formatNumber(this)"
             />
           </form>
           <form action="#" class="searchbox">
@@ -115,7 +116,11 @@
               autocomplete="off"
             />
           </form>
-          <p class="mr-1">Change: <span id="change">UGX</span>200,000</p>
+          <div class="d-flex align-items-center mb-3">
+            <h5>Change:</h5>
+            <h5 class="mr-1" id="change">UGX</h5>
+            <h5 id="current_change">0</h5>
+          </div>
         </div>
         <div class="col-sm-12">
           <div class="card">
