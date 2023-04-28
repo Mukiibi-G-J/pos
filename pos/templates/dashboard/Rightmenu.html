@@ -235,6 +235,11 @@
                 <i class="las la-minus"></i><span>Add purchase</span>
               </a>
             </li>
+            <li class="">
+              <a href="{% url 'products:generate_purchase_list' %}">
+                <i class="las la-minus"></i><span>Generate Purchase List</span>
+              </a>
+            </li>
           </ul>
         </li>
         <li class=" ">
@@ -298,7 +303,7 @@
         </li>
 
         <li class="">
-          <a href="../backend/page-report.html" class="">
+          <a href= "{% url 'products:reports' %}" class="">
             <svg
               class="svg-icon"
               id="p-dash7"
@@ -382,6 +387,11 @@
             <li class="">
               <a href="/add_sales?#" id="add_sales_link">
                 <i class="las la-minus"></i><span>Add Sale</span>
+              </a>
+            </li>
+            <li class="">
+              <a href="{% url 'products:add_single_sell' %}" id="add_sales_link">
+                <i class="las la-minus"></i><span>Add Single Sale</span>
               </a>
             </li>
           </ul>

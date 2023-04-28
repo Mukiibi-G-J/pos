@@ -178,23 +178,10 @@
             </div>
           </div>
           <div class="card-body">
-            <form action="page-list-product.html" data-toggle="validator">
+            <form action="{% url 'products:add_single_product' %}" method="POST" data-toggle="validator" enctype="multipart/form-data">
+              {% csrf_token %}
               <div class="row">
-                <div class="col-md-12">
-                  <div class="form-group">
-                    <label>Product Type *</label>
-                    <select
-                      name="type"
-                      class="selectpicker form-control"
-                      data-style="py-0"
-                    >
-                      <option>Standard</option>
-                      <option>Combo</option>
-                      <option>Digital</option>
-                      <option>Service</option>
-                    </select>
-                  </div>
-                </div>
+                
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Name *</label>
@@ -203,117 +190,78 @@
                     <div class="help-block with-errors"></div>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label>Code *</label>
-
-                    {{ form.product_code }}
-                    <div class="help-block with-errors"></div>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label>Barcode Symbology *</label>
-                    <!-- <select
-                      name="type"
-                      class="selectpicker form-control"
-                      data-style="py-0"
-                    >
-                      <option>CREM01</option>
-                      <option>UM01</option>
-                      <option>SEM01</option>
-                      <option>COF01</option>
-                      <option>FUN01</option>
-                      <option>DIS01</option>
-                      <option>NIS01</option>
-                    </select> -->
-                    {{ form.category_id }}
-                  </div>
-                </div>
+           
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Category *</label>
-                    <select
-                      name="type"
-                      class="selectpicker form-control"
-                      data-style="py-0"
-                    >
-                      <option>Beauty</option>
-                      <option>Grocery</option>
-                      <option>Food</option>
-                      <option>Furniture</option>
-                      <option>Shoes</option>
-                      <option>Frames</option>
-                      <option>Jewellery</option>
-                    </select>
+                   
+                    {% render_field form.category_id  class="form-control" %}
                   </div>
                 </div>
+           
+              
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Cost *</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Enter Cost"
-                      data-errors="Please Enter Cost."
-                      required
-                    />
+                    {% render_field form.unit_price class="form-control" placeholder="Enter Cost" data-errors="Please Enter Cost."%}
+                 
                     <div class="help-block with-errors"></div>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label>Price *</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Enter Price"
-                      data-errors="Please Enter Price."
-                      required
-                    />
+                    <label>Selling Price *</label>
+                    {% render_field form.cost  class="form-control" placeholder="Enter Selling Price" data-errors="Please Enter Price." %}
                     <div class="help-block with-errors"></div>
                   </div>
                 </div>
-                <div class="col-md-12">
-                  <div class="form-group">
-                    <label>Tax Method *</label>
-                    <select
-                      name="type"
-                      class="selectpicker form-control"
-                      data-style="py-0"
-                    >
-                      <option>Exclusive</option>
-                      <option>Inclusive</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-md-12">
+             
+                <div class="col-md-6">
                   <div class="form-group">
                     <label>Quantity *</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Enter Quantity"
-                      required
-                    />
+                   
+                    {% render_field form.quantity_in_stock  class="form-control" placeholder="Enter Quantity" data-errors="Please Enter Quantity." %}
                     <div class="help-block with-errors"></div>
                   </div>
                 </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Brand *</label>
+                    {% render_field form.brand class="form-control" %}
+                    <div class="help-block with-errors"></div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Unit of Measure *</label>
+                    {% render_field form.unit_of_measure class="form-control" %}
+                    <div class="help-block with-errors"></div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Reorder level *</label>
+                    {% render_field form.reorder_level class="form-control" %}
+                    <div class="help-block with-errors"></div>
+                  </div>
+                </div>
+           
                 <div class="col-md-12">
                   <div class="form-group">
                     <label>Image</label>
-                    <input
+                    {% comment %} <input
                       type="file"
                       class="form-control image-file"
                       name="pic"
                       accept="image/*"
-                    />
+                    /> {% endcomment %}
                   </div>
                 </div>
                 <div class="col-md-12">
                   <div class="form-group">
                     <label>Description / Product Details</label>
-                    <textarea class="form-control" rows="4"></textarea>
+                
+                    {% render_field form.description  class="form-control" rows="4" %}
                   </div>
                 </div>
               </div>

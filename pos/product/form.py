@@ -1,7 +1,8 @@
 from re import A
 from django.forms import ImageField, ModelForm, TextInput, ModelChoiceField, Form
 from django import forms
-from .models import Category, Products
+from .models import Category, Products, Sales
+from django_select2.forms import ModelSelect2Widget
 
 
 class MyChoiceField(forms.ChoiceField):
@@ -36,7 +37,6 @@ class AddProductForm(ModelForm):
             widget=forms.Select(
                 attrs={
                     "class": "form-control",
-                    
                 }
             ),
         )
@@ -44,16 +44,17 @@ class AddProductForm(ModelForm):
     class Meta:
         model = Products
         fields = [
-            "product_code",
+           "product_image",
             "product_name",
             "category_id",
             "quantity_in_stock",
             "unit_price",
             "cost",
             "reorder_level",
-            "unit_id",
+            "unit_of_measure",
             "brand",
             "export_csv",
+            "description"
         ]
 
         widgets = {
@@ -97,16 +98,24 @@ class AddProductForm(ModelForm):
                     "placeholder": "Enter Reorder Level",
                 }
             ),
-            "brand": TextInput(
-                attrs={
-                    "class": "form-control",
-                    "placeholder": "Enter Brand",
-                }
-            ),
-         
+            
             # "category_id":ModelChoiceField(queryset=Category.objects.all(), to_field_name="type")
         }
 
 
 class FileUploadForm(Form):
     file = forms.FileField()
+
+
+class AddSalesForm(ModelForm):
+    
+
+    class Meta:
+        model = Sales
+        fields = [
+            "product",
+            "quantity",
+            "price",
+            "discount",
+            "date_sold",
+        ]

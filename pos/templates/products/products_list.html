@@ -1,6 +1,7 @@
 {% extends 'base/base.html' %} {% block content %}
 {% load widget_tweaks %}
-
+{% load humanize %}
+{% load static %}
 
 
 <div class="content-page">
@@ -80,7 +81,7 @@
           <table class="data-table table mb-0 tbl-server-info">
             <thead class="bg-white text-uppercase">
               <tr class="ligth ligth-data">
-                {% comment %} <th>
+                <th>
                   <div class="checkbox d-inline-block">
                     <input
                       type="checkbox"
@@ -89,9 +90,10 @@
                     />
                     <label for="checkbox1" class="mb-0"></label>
                   </div>
-                </th> {% endcomment %}
+                </th>
                 <th>Product</th>
                 <th>Code</th>
+                {% comment %} <th>Product</th> {% endcomment %}
                 <th>Category</th>
                 <th>Brand Name</th>
                 <th>Cost</th>
@@ -104,7 +106,7 @@
               {% for product in products %}
 
               <tr>
-                {% comment %} <td>
+                 <td>
                   <div class="checkbox d-inline-block">
                     <input
                       type="checkbox"
@@ -113,27 +115,32 @@
                     />
                     <label for="checkbox2" class="mb-0"></label>
                   </div>
-                </td> {% endcomment %}
-                {% comment %} <td>
-                  <div class="d-flex align-items-center">
+                </td> 
+               <td>
+      
+                  <div class="d-flex align-items-center flex-column">
+                    <div>
+                      {{ product.product_name}}
+                      {% comment %} <p class="mb-0"><small>This is test Product</small></p> {% endcomment %}
+                    </div>
+                  <a href={{ product.product_image.url }} target="_blank">
                     <img
-                      src="../assets/images/table/product/01.jpg"
+                      src="{{ product.product_image.url }}"
                       class="img-fluid rounded avatar-50 mr-3"
                       alt="image"
                     />
-                    <div>
-                      Organic Cream
-                      <p class="mb-0"><small>This is test Product</small></p>
-                    </div>
+                  </a>
+                    
                   </div>
-                </td> {% endcomment %}
-                <td>{{ product.product_name}}</td>
+                </td> 
                 <td>{{ product.product_code }}</td>
+
+                {% comment %} <td>{{ product.product_name}}</td> {% endcomment %}
                 <td> {{ product.category_id.category_name }}
+                  <td> {{ product.brand.brand_name }}</td>
               
-                <td>{{ product.unit_price}}</td>
-                <td>{{ product.cost }}</td>
-                <td> {{ product.brand.brand_name }}</td>
+                <td>{{ product.unit_price|floatformat:"0"|intcomma }} </td>
+                <td>{{ product.cost|floatformat:"0"|intcomma }} </td>
                   {% if product.quantity_in_stock < product.reorder_level %}
                 <td class="text-danger">{{ product.quantity_in_stock}}</td>
                 {% else %}
