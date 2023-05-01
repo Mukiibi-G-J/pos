@@ -53,12 +53,12 @@
 
                    {% for product in products.new_product %}
 
-                   
+                  
                   {% if forloop.counter0|divisibleby:2 %}
                   <tr>
                 {% endif %}
                 <tr class="table-default">
-                  <td colspan="9"><strong>New Products</strong></td>
+                  <td colspan="9"><strong>New Products</strong></td>  {{ forloop.counter }} 
               </tr>
                 {% if forloop.counter|divisibleby:2 or forloop.last %}
                   </tr>
@@ -150,7 +150,7 @@
                             <tr>
                           {% endif %}
                           <tr class="table-default">
-                            <td colspan="9"><strong>OLD Products</strong></td>
+                            <td colspan="9"><strong>OLD Products</strong></td>  {{ forloop.counter }} 
                         </tr>
                           {% if forloop.counter|divisibleby:2 or forloop.last %}
                             </tr>
