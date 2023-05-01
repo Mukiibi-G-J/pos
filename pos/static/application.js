@@ -10,11 +10,20 @@ const clear__cart = document.getElementById("clear__cart");
 const add_sales_link = document.getElementById("add_sales_link");
 const current_total_price = document.getElementById("current_total_price");
 const amount_received = document.getElementById("amount_received");
+const close_my_popup = document.getElementById("close_my_popup");
+const product_popup_purchase = document.getElementById(
+  "product_popup_purchase"
+);
+
 // Set up variables to track the start and end of the barcode input
 let barcodeStart = false;
 let barcodeData = "";
 
+close_my_popup.addEventListener("click", function (event) {
+  event.preventDefault();
 
+  product_popup_purchase.style.display = "none";
+});
 
 // Listen for keyboard input events on the whole page
 window.addEventListener("keydown", (event) => {

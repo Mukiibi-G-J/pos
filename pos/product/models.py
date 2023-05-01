@@ -154,3 +154,5 @@ class Sales(models.Model):
             self.product.save()
 
         super(Sales, self).save(*args, **kwargs)
+
+

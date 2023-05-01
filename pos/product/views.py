@@ -337,8 +337,12 @@ class ListSale(generic.View):
 
 
 # ? --------------------------- Purchases ---------------------------
-class AddPurchase(generic.TemplateView):
-    template_name = "purchases/add_purchases.html"
+class AddPurchase(generic.View):
+    form_class = FileUploadForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, "purchases/add_purchases.html", {"form": form})
 
 
 class ListPurchase(generic.TemplateView):
@@ -350,6 +354,139 @@ def generate_purchase_list(request):
 
     context = {"products": product}
     return render(request, "purchases/generate_purchase_list.html", context)
+
+
+def upload_purchase(request):
+    form = FileUploadForm()
+    context = {"form": form}
+    if request.method == "POST":
+        # print(request.POST)
+        file = request.FILES["file"]
+
+        # sheet
+        wb = load_workbook(file)
+        # get all sheet names
+        sheets = wb.get_sheet_names()
+        context = {
+            "products": {
+                "new_product": [],
+                "old_product": [],
+            }
+        }
+
+        for sheet in sheets:
+            # get sheet by name
+            ws = wb.get_sheet_by_name(sheet)
+            values = [row[0:] for row in ws.values]
+            # convert to dataframe
+
+            df = pd.DataFrame(values)
+
+            header_list = [
+                "Product Code",
+                "Product Name",
+                "Description",
+                "Quantity",
+                "Cost Price",
+                "Sales Price",
+                "Reorder Level",
+                "Purchase Quantity",
+                "Purchase Date",
+                "Supplier",
+            ]
+            # print(df.iloc[0].tolist())
+            if df.iloc[0].tolist() == header_list:
+                df = df[0:]
+                # get the first row as header
+                df.columns = df.iloc[0]
+                # drop the first row
+                df = df[1:]
+                # reset index
+                df = df.reset_index(drop=True)
+                # drop nonwe in PURCHASE PRICE, SALES PRICE, QUANTITY, PRODUCT NAME
+                df = df.dropna(
+                    subset=[
+                        "Cost Price",
+                        "Sales Price",
+                        "Purchase Quantity",
+                        "Purchase Date",
+                        "Supplier",
+                    ],
+                    how="all",
+                )
+
+                # convert to dictionary
+                product_name = df["Product Name"].tolist()
+                product_code = df["Product Code"].tolist()
+                description = df["Description"].tolist()
+                quantity = df["Quantity"].tolist()
+                cost_price = df["Cost Price"].tolist()
+                sales_price = df["Sales Price"].tolist()
+                reorder_level = df["Reorder Level"].tolist()
+                purchase_quantity = df["Purchase Quantity"].tolist()
+                purchase_date = df["Purchase Date"].tolist()
+                supplier = df["Supplier"].tolist()
+
+                for i in range(len(product_name)):
+                    # check if product exists
+                    product = Products.objects.filter(product_code=product_code[i])
+                    if product.exists():
+                        product = product[0]
+                        products = {
+                            "product_name": product_name[i],
+                            "product_code": product_code[i],
+                            "description": description[i],
+                            "quantity": quantity[i],
+                            "cost_price": cost_price[i],
+                            "sales_price": sales_price[i],
+                            "reorder_level": reorder_level[i],
+                            "purchase_quantity": purchase_quantity[i],
+                            "purchase_date": purchase_date[i],
+                            "supplier": supplier[i],
+                            "new_quantity": product.quantity_in_stock
+                            + int(purchase_quantity[i]),
+                            "new_product": "False",
+                        }
+                        print(products)
+                        context["products"]["old_product"].append(products)
+                        print(context)
+                    else:
+                        products = {
+                            "product_code": generate_random_code(13),
+                            "product_name": product_name[i],
+                            "description": description[i],
+                            "quantity": quantity[i],
+                            "cost_price": cost_price[i],
+                            "sales_price": sales_price[i],
+                            "reorder_level": reorder_level[i],
+                            "purchase_quantity": purchase_quantity[i],
+                            "purchase_date": purchase_date[i],
+                            "supplier": supplier[i],
+                            "new_product": "True",
+                        }
+                        print(products)
+                        context["products"]["new_product"].append(products)
+                return render(request, "purchases/add_purchases.html", context)
+
+            # else:
+            #     products = {
+            #         "product_name": product_name[i],
+            #         "product_code": product_code[i],
+            #         "description": description[i],
+            #         "quantity": quantity[i],
+            #         "cost_price": cost_price[i],
+            #         "sales_price": sales_price[i],
+            #         "reorder_level": reorder_level[i],
+            #         "purchase_quantity": purchase_quantity[i],
+            #         "purchase_date": purchase_date[i],
+            #         "supplier": supplier[i],
+            #         "new_product": "True",
+            #     }
+
+            #     context["products"].append(products)
+            #     print(context)
+
+    return render(request, "purchases/add_purchases.html", context)
 
 
 @login_required
@@ -590,19 +727,25 @@ def export_to_excel(request):
         "Cost Price",
         "Sales Price",
         "Reorder Level",
+        "Purchase Quantity",
+        "Purchase Date",
         "Supplier",
     ]
-    
-    
+
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
-    
-    
+
     font_style = xlwt.XFStyle()
     rows = Products.objects.all().values_list(
-        "product_code","product_name","description","quantity_in_stock","unit_price","cost","reorder_level"
+        "product_code",
+        "product_name",
+        "description",
+        "quantity_in_stock",
+        "unit_price",
+        "cost",
+        "reorder_level",
     )
-    
+
     for row in rows:
         row_num += 1
         for col_num in range(len(row)):
