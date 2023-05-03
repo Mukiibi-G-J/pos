@@ -24,6 +24,7 @@ urlpatterns = [
     #! purchases
     path("add_purchases", views.AddPurchase.as_view(), name="add_purchases"),
     path("list_purchases", views.ListPurchase.as_view(), name="list_purchases"),
+    path("add_purchase_upload", views.add_purchase_upload, name="add_purchase_upload"),
     path(
         "generate_purchase_list",
         views.generate_purchase_list,
@@ -42,4 +43,6 @@ urlpatterns = [
     ),
     # export to excel
     path("export_to_excel", views.export_to_excel, name="export_to_excel"),
+    path("export_all_products_excel", views.export_all_products_excel, name="export_all_products_excel"),
+    path("export_all_sales_excel", views.export_all_sales_excel, name="export_all_sales_excel"),
 ]

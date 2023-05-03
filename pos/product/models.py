@@ -68,6 +68,7 @@ class Products(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     publish = models.DateTimeField(default=timezone.now)
+    new_arrival = models.BooleanField(default=False)
 
     def clean(self):
         if self.quantity_in_stock is not None and self.quantity_in_stock < 0:
@@ -156,3 +157,16 @@ class Sales(models.Model):
         super(Sales, self).save(*args, **kwargs)
 
 
+
+class Supplier(models.Model):
+    name = models.CharField(max_length=255)
+    
+
+class Purchases(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    purchase_price = models.IntegerField()
+    purchase_date = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    

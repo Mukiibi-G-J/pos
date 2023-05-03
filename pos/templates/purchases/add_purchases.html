@@ -28,7 +28,7 @@
           </div>
           <div class="modal-body">
            <div class="card">
-            <form action="{% url 'products:add_product_upload' %}" method="post">
+            <form action="{% url 'products:add_purchase_upload' %}" method="post">
              {% csrf_token %}
              <div class="card-header">
                <button type="submit" class="btn btn-primary">Submit</button>
@@ -51,25 +51,25 @@
                    </thead>
                    <tbody>
 
-                   {% for product in products.new_product %}
+                   {% for product in products %}
 
                   
-                  {% if forloop.counter0|divisibleby:2 %}
-                  <tr>
+                  {% comment %} {% if forloop.counter0|divisibleby:2 %}
+                 
                 {% endif %}
                 <tr class="table-default">
-                  <td colspan="9"><strong>New Products</strong></td>  {{ forloop.counter }} 
+                  <td colspan="9"><strong>New Products</strong></td>   
               </tr>
                 {% if forloop.counter|divisibleby:2 or forloop.last %}
-                  </tr>
-                {% endif %}
+                {% endcomment %}
+                {% comment %} {% endif %} {% endcomment %}
                 
                      <tr class="table-default">
                        <th scope="row">
                          <input
                            type="text"
                            class="form-control"
-                           name="uuid"
+                           name="product_code"
                            value="{{ product.product_code }}"
                            readonly
                          />
@@ -120,7 +120,7 @@
                          <input
                            type="text"
                            class="form-control"
-                           name="category"
+                           name="purchase_quantity"
                            value="{{ product.purchase_quantity }}"
                          />
  
@@ -129,7 +129,7 @@
                          <input
                            type="text"
                            class="form-control"
-                           name="unit"
+                           name="purchase_date"
                            value="{{ product.purchase_date }}"
                          />
  
@@ -138,104 +138,24 @@
                          <input
                            type="text"
                            class="form-control"
-                           name="brand"
+                           name="supplier"
                            value="{{ product.supplier }}"
                          />
  
                        </td>
                      </tr>
-                       {% endfor %}
+                       {% comment %} {% endfor %}
                       {% for product in products.old_product %}
                       {% if forloop.counter0|divisibleby:2 %}
-                            <tr>
+                            
                           {% endif %}
                           <tr class="table-default">
-                            <td colspan="9"><strong>OLD Products</strong></td>  {{ forloop.counter }} 
+                            <td colspan="9"><strong>OLD Products</strong></td>   
                         </tr>
                           {% if forloop.counter|divisibleby:2 or forloop.last %}
-                            </tr>
-                          {% endif %}
-                      <tr class="table-default">
-                      <th scope="row">
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="uuid"
-                          value="{{ product.product_code }}"
-                          readonly
-                        />
-                      <th scope="row">
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="product_name"
-                          value="{{ product.product_name }}"
-                        />
-                      </th>
-                      <td>
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="description"
-                          value="{{ product.description }}"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="quantity"
-                          value="{{ product.quantity }}"
-                        />
-
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="purchase_price"
-                          value="{{ product.cost_price }}"
-                        />
-
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="sales_price"
-                          value="{{ product.sales_price }}"
-                        />
-
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="category"
-                          value="{{ product.purchase_quantity }}"
-                        />
-
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="unit"
-                          value="{{ product.purchase_date }}"
-                        />
-
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="brand"
-                          value="{{ product.supplier }}"
-                        />
-
-                      </td>
-                    </tr>
-                     
+                            
+                          {% endif %} {% endcomment %}
+                      
                    {% endfor %}
                    </tbody>
                 </table>

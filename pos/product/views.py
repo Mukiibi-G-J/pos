@@ -3,6 +3,8 @@ from product.form import (
     AddProductForm,
     AddSalesForm,
 )
+from datetime import datetime
+import time
 from authentication.models import CustomUser
 from django.shortcuts import render, redirect
 from .utils import generate_random_code
@@ -12,7 +14,9 @@ from .form import FileUploadForm
 import pandas as pd
 from django.views.decorators.csrf import csrf_exempt
 import json
-from django.db.models import F, Sum
+from django.db.models import DateTimeField
+from django.db.models import ExpressionWrapper, F, Func, Value, Sum
+from django.db.models.functions import Trunc, Cast
 
 from django.template.loader import render_to_string
 from django.views import generic
@@ -345,8 +349,19 @@ class AddPurchase(generic.View):
         return render(request, "purchases/add_purchases.html", {"form": form})
 
 
-class ListPurchase(generic.TemplateView):
+class ListPurchase(generic.ListView):
+    model = Purchases
+    queryset = Purchases.objects.all()
     template_name = "purchases/list_purchases.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["purchases"] = Purchases.objects.all().annotate(
+            total_quantity=F("quantity") * F("purchase_price")
+        )
+        print(context["purchases"])
+        
+        return context
 
 
 def generate_purchase_list(request):
@@ -354,6 +369,106 @@ def generate_purchase_list(request):
 
     context = {"products": product}
     return render(request, "purchases/generate_purchase_list.html", context)
+
+
+def add_purchase_upload(request):
+    if request.method == "POST":
+        data = request.POST
+        # get values form the dict
+
+        product_name = request.POST.getlist("product_name")
+        product_code = request.POST.getlist("product_code")
+        description = request.POST.getlist("description")
+        quantity = request.POST.getlist("quantity")
+        purchase_price = request.POST.getlist("purchase_price")
+        sales_price = request.POST.getlist("sales_price")
+        purchase_quantity = request.POST.getlist("purchase_quantity")
+        purchase_date = request.POST.getlist("purchase_date")
+        supplier = request.POST.getlist("supplier")
+        # print(product_name,product_code,description,quantity,purchase_date,purchase_price,purchase_quantity,supplier,sales_price)
+        for (
+            product_name,
+            product_code,
+            description,
+            quantity,
+            purchase_date,
+            purchase_price,
+            purchase_quantity,
+            supplier,
+            sales_price,
+        ) in zip(
+            product_name,
+            product_code,
+            description,
+            quantity,
+            purchase_date,
+            purchase_price,
+            purchase_quantity,
+            supplier,
+            sales_price,
+        ):
+            # check if product exists
+            prod = Products.objects.filter(product_code=product_code)
+            if prod.exists():
+                print("{} exists".format(product_name))
+                new_quantity = int(quantity) + int(purchase_quantity)
+                my_product = Products.objects.get(product_code=product_code)
+                # get current quantity and update it with new quantity
+                my_product.quantity_in_stock = int(my_product.quantity_in_stock) + int(
+                    new_quantity
+                )
+                my_product.new_arrival = True
+                my_product.save()
+
+                if not Supplier.objects.filter(name=supplier).exists():
+                    Supplier.objects.create(name=supplier)
+                date = time.strptime(
+                    purchase_date.replace(", midnight", ""), "%B %d, %Y"
+                )
+                date = time.strftime("%Y-%m-%dT%H:%M:%S", date)
+
+                Purchases.objects.create(
+                    product=my_product,
+                    quantity=purchase_quantity,
+                    purchase_price=purchase_price,
+                    supplier=Supplier.objects.get(name=supplier),
+                    purchase_date=date,
+                )
+
+            elif not prod.exists():
+                new_quantity = int(quantity) + int(purchase_quantity)
+                print(new_quantity)
+                new_product = Products.objects.create(
+                    product_name=product_name,
+                    product_code=product_code,
+                    description=description,
+                    unit_of_measure="pcs",
+                    category_id=Category.objects.get(category_name="others"),
+                    quantity_in_stock=new_quantity,
+                    unit_price=purchase_price,
+                    cost=sales_price,
+                    reorder_level=0,
+                    brand=Brand.objects.get(brand_name="others"),
+                    new_arrival=True,
+                )
+                print("{} created and doesnot exits".format(product_name))
+                new_product.save()
+                if not Supplier.objects.filter(name=supplier).exists():
+                    Supplier.objects.create(name=supplier)
+                date = time.strptime(
+                    purchase_date.replace(", midnight", ""), "%B %d, %Y"
+                )
+                date = time.strftime("%Y-%m-%dT%H:%M:%S", date)
+                Purchases.objects.create(
+                    product=new_product,
+                    quantity=purchase_quantity,
+                    purchase_price=purchase_price,
+                    purchase_date=date,
+                    supplier=Supplier.objects.get(name=supplier),
+                )
+                # return redirect("products:list_products")
+
+    return redirect("products:product_list")
 
 
 def upload_purchase(request):
@@ -367,12 +482,7 @@ def upload_purchase(request):
         wb = load_workbook(file)
         # get all sheet names
         sheets = wb.get_sheet_names()
-        context = {
-            "products": {
-                "new_product": [],
-                "old_product": [],
-            }
-        }
+        context = {"products": []}
 
         for sheet in sheets:
             # get sheet by name
@@ -448,7 +558,7 @@ def upload_purchase(request):
                             "new_product": "False",
                         }
                         print(products)
-                        context["products"]["old_product"].append(products)
+                        context["products"].append(products)
                         print(context)
                     else:
                         products = {
@@ -465,7 +575,7 @@ def upload_purchase(request):
                             "new_product": "True",
                         }
                         print(products)
-                        context["products"]["new_product"].append(products)
+                        context["products"].append(products)
                 return render(request, "purchases/add_purchases.html", context)
 
             # else:
@@ -746,6 +856,104 @@ def export_to_excel(request):
         "reorder_level",
     )
 
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    return response
+
+
+def export_all_products_excel(request):
+    print(request)
+
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = 'attachment; filename="products.xls"'
+    wb = xlwt.Workbook(encoding="utf-8")
+    ws = wb.add_sheet("AllProducts")
+    row_num = 0
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+    columns = [
+        "Product Code",
+        "Product Name",
+        "Description",
+        "Unit",
+        "Quantity",
+        "Purchase Price",
+        "Sales Price",
+        "Reorder Level",
+        "Category",
+        "Brand",
+        "Image",
+    ]
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    font_style = xlwt.XFStyle()
+    rows = (
+        Products.objects.all()
+        .values_list(
+            "product_code",
+            "product_name",
+            "description",
+            "unit_of_measure",
+            "quantity_in_stock",
+            "unit_price",
+            "cost",
+            "reorder_level",
+        )
+        .annotate(
+            category_name=F("category_id__category_name"),
+            brand_name=F("brand__brand_name"),
+            product_image=F("product_image"),
+        ).order_by('product_name')
+    )
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    return response
+
+
+def export_all_sales_excel(request):
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = 'attachment; filename="products.xls"'
+    wb = xlwt.Workbook(encoding="utf-8")
+    ws = wb.add_sheet("AllProducts")
+    row_num = 0
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+    columns = [
+        "Price",
+        "Discount",
+        "Stock Left",
+        "quantity",
+        "Current Cost Price",
+        "Product Code",
+        "Product Name",
+    ]
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    font_style = xlwt.XFStyle()
+    rows = (
+        Sales.objects.all()
+        .values_list(
+            "price",
+            "discount",
+            "stock_left",
+            "quantity",
+            "current_cost_price",
+        )
+        .annotate(
+            product_code=F("product__product_code"),
+            product_name=F("product__product_name"),
+        )
+    )
     for row in rows:
         row_num += 1
         for col_num in range(len(row)):

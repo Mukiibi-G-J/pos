@@ -37,17 +37,22 @@
                     </div>
                   </th>
                   <th>Date</th>
-                  <th>Reference No</th>
+                  <th>Product Code</th>
+                  <th>Product Name</th>
+                  <th>Purchase Quantity</th>
+                  <th>Purchase Price</th>
+                  <th>Total Quantity</th>
                   <th>Supplier</th>
                   <th>Purchase Status</th>
-                  <th>Total</th>
+
+                  {% comment %} <th>Total</th>
                   <th>Paid</th>
-                  <th>Balance</th>
-                  <th>Payment Status</th>
+                  <th>Balance</th> {% endcomment %}
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody class="ligth-body">
+                {% for purchase in purchases %}
                 <tr>
                   <td>
                     <div class="checkbox d-inline-block">
@@ -59,14 +64,21 @@
                       <label for="checkbox2" class="mb-0"></label>
                     </div>
                   </td>
-                  <td>01 jan 2021</td>
-                  <td>PO201</td>
-                  <td>Fruits Supply</td>
+              
+                  <td>{{ purchase.purchase_date }}</td>
+                  <td>{{ purchase.product.product_code }}</td>
+                  <td>{{ purchase.product.product_name }}</td>
+                  <td>{{ purchase.quantity }}</td>
+                  <td>{{ purchase.purchase_price }}</td>
+                  <td>{{ purchase.total_quantity }}</td>
+
+                  <td>{{ purchase.supplier.name }}</td>
+   
+                 
+
                   <td><div class="badge badge-success">Received</div></td>
-                  <td>50.1</td>
-                  <td>45.1</td>
-                  <td>5.00</td>
-                  <td><div class="badge badge-warning">Panding</div></td>
+
+                  
                   <td>
                     <div class="d-flex align-items-center list-action">
                       <a
@@ -99,414 +111,9 @@
                     </div>
                   </td>
                 </tr>
-                <tr>
-                  <td>
-                    <div class="checkbox d-inline-block">
-                      <input
-                        type="checkbox"
-                        class="checkbox-input"
-                        id="checkbox3"
-                      />
-                      <label for="checkbox3" class="mb-0"></label>
-                    </div>
-                  </td>
-                  <td>05 jan 2021</td>
-                  <td>PO202</td>
-                  <td>Footwear Supply</td>
-                  <td><div class="badge badge-success">Received</div></td>
-                  <td>40.5</td>
-                  <td>38.1</td>
-                  <td>2.00</td>
-                  <td><div class="badge badge-warning">Panding</div></td>
-                  <td>
-                    <div class="d-flex align-items-center list-action">
-                      <a
-                        class="badge badge-info mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="View"
-                        href="#"
-                        ><i class="ri-eye-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-success mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Edit"
-                        href="#"
-                        ><i class="ri-pencil-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-warning mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Delete"
-                        href="#"
-                        ><i class="ri-delete-bin-line mr-0"></i
-                      ></a>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="checkbox d-inline-block">
-                      <input
-                        type="checkbox"
-                        class="checkbox-input"
-                        id="checkbox4"
-                      />
-                      <label for="checkbox4" class="mb-0"></label>
-                    </div>
-                  </td>
-                  <td>06 jan 2021</td>
-                  <td>PO251</td>
-                  <td>Furniture Supply</td>
-                  <td><div class="badge badge-success">Received</div></td>
-                  <td>80.1</td>
-                  <td>35.1</td>
-                  <td>45.00</td>
-                  <td><div class="badge badge-warning">Panding</div></td>
-                  <td>
-                    <div class="d-flex align-items-center list-action">
-                      <a
-                        class="badge badge-info mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="View"
-                        href="#"
-                        ><i class="ri-eye-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-success mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Edit"
-                        href="#"
-                        ><i class="ri-pencil-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-warning mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Delete"
-                        href="#"
-                        ><i class="ri-delete-bin-line mr-0"></i
-                      ></a>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="checkbox d-inline-block">
-                      <input
-                        type="checkbox"
-                        class="checkbox-input"
-                        id="checkbox5"
-                      />
-                      <label for="checkbox5" class="mb-0"></label>
-                    </div>
-                  </td>
-                  <td>08 jan 2021</td>
-                  <td>PO261</td>
-                  <td>Food Supply</td>
-                  <td><div class="badge badge-success">Received</div></td>
-                  <td>30.1</td>
-                  <td>15.1</td>
-                  <td>15.00</td>
-                  <td><div class="badge badge-warning">Panding</div></td>
-                  <td>
-                    <div class="d-flex align-items-center list-action">
-                      <a
-                        class="badge badge-info mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="View"
-                        href="#"
-                        ><i class="ri-eye-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-success mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Edit"
-                        href="#"
-                        ><i class="ri-pencil-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-warning mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Delete"
-                        href="#"
-                        ><i class="ri-delete-bin-line mr-0"></i
-                      ></a>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="checkbox d-inline-block">
-                      <input
-                        type="checkbox"
-                        class="checkbox-input"
-                        id="checkbox6"
-                      />
-                      <label for="checkbox6" class="mb-0"></label>
-                    </div>
-                  </td>
-                  <td>09 jan 2021</td>
-                  <td>PO271</td>
-                  <td>Grocery Supply</td>
-                  <td><div class="badge badge-success">Received</div></td>
-                  <td>20.1</td>
-                  <td>7.1</td>
-                  <td>13.00</td>
-                  <td><div class="badge badge-warning">Panding</div></td>
-                  <td>
-                    <div class="d-flex align-items-center list-action">
-                      <a
-                        class="badge badge-info mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="View"
-                        href="#"
-                        ><i class="ri-eye-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-success mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Edit"
-                        href="#"
-                        ><i class="ri-pencil-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-warning mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Delete"
-                        href="#"
-                        ><i class="ri-delete-bin-line mr-0"></i
-                      ></a>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="checkbox d-inline-block">
-                      <input
-                        type="checkbox"
-                        class="checkbox-input"
-                        id="checkbox7"
-                      />
-                      <label for="checkbox7" class="mb-0"></label>
-                    </div>
-                  </td>
-                  <td>10 jan 2021</td>
-                  <td>PO101</td>
-                  <td>Packing Supply</td>
-                  <td><div class="badge badge-success">Received</div></td>
-                  <td>60.1</td>
-                  <td>40.1</td>
-                  <td>20.00</td>
-                  <td><div class="badge badge-warning">Panding</div></td>
-                  <td>
-                    <div class="d-flex align-items-center list-action">
-                      <a
-                        class="badge badge-info mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="View"
-                        href="#"
-                        ><i class="ri-eye-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-success mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Edit"
-                        href="#"
-                        ><i class="ri-pencil-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-warning mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Delete"
-                        href="#"
-                        ><i class="ri-delete-bin-line mr-0"></i
-                      ></a>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="checkbox d-inline-block">
-                      <input
-                        type="checkbox"
-                        class="checkbox-input"
-                        id="checkbox8"
-                      />
-                      <label for="checkbox8" class="mb-0"></label>
-                    </div>
-                  </td>
-                  <td>12 jan 2021</td>
-                  <td>PO122</td>
-                  <td>Fish Supply</td>
-                  <td><div class="badge badge-success">Received</div></td>
-                  <td>33.1</td>
-                  <td>13.1</td>
-                  <td>20.00</td>
-                  <td><div class="badge badge-warning">Panding</div></td>
-                  <td>
-                    <div class="d-flex align-items-center list-action">
-                      <a
-                        class="badge badge-info mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="View"
-                        href="#"
-                        ><i class="ri-eye-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-success mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Edit"
-                        href="#"
-                        ><i class="ri-pencil-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-warning mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Delete"
-                        href="#"
-                        ><i class="ri-delete-bin-line mr-0"></i
-                      ></a>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="checkbox d-inline-block">
-                      <input
-                        type="checkbox"
-                        class="checkbox-input"
-                        id="checkbox9"
-                      />
-                      <label for="checkbox9" class="mb-0"></label>
-                    </div>
-                  </td>
-                  <td>12 jan 2021</td>
-                  <td>PO123</td>
-                  <td>Cloth Supply</td>
-                  <td><div class="badge badge-success">Received</div></td>
-                  <td>10.1</td>
-                  <td>8.1</td>
-                  <td>2.00</td>
-                  <td><div class="badge badge-warning">Panding</div></td>
-                  <td>
-                    <div class="d-flex align-items-center list-action">
-                      <a
-                        class="badge badge-info mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="View"
-                        href="#"
-                        ><i class="ri-eye-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-success mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Edit"
-                        href="#"
-                        ><i class="ri-pencil-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-warning mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Delete"
-                        href="#"
-                        ><i class="ri-delete-bin-line mr-0"></i
-                      ></a>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div class="checkbox d-inline-block">
-                      <input
-                        type="checkbox"
-                        class="checkbox-input"
-                        id="checkbox10"
-                      />
-                      <label for="checkbox10" class="mb-0"></label>
-                    </div>
-                  </td>
-                  <td>13 jan 2021</td>
-                  <td>PO124</td>
-                  <td>Toy Supply</td>
-                  <td><div class="badge badge-success">Received</div></td>
-                  <td>10.1</td>
-                  <td>5.1</td>
-                  <td>5.00</td>
-                  <td><div class="badge badge-warning">Panding</div></td>
-                  <td>
-                    <div class="d-flex align-items-center list-action">
-                      <a
-                        class="badge badge-info mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="View"
-                        href="#"
-                        ><i class="ri-eye-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-success mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Edit"
-                        href="#"
-                        ><i class="ri-pencil-line mr-0"></i
-                      ></a>
-                      <a
-                        class="badge bg-warning mr-2"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        title=""
-                        data-original-title="Delete"
-                        href="#"
-                        ><i class="ri-delete-bin-line mr-0"></i
-                      ></a>
-                    </div>
-                  </td>
-                </tr>
+                {% endfor %}
+               
+               
               </tbody>
             </table>
           </div>
