@@ -26,7 +26,6 @@ class ModleAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Brand)
 admin.site.register(models.Product_Unit)
-admin.site.register(models.Sales)
 
 
 # csv upload form
@@ -68,8 +67,6 @@ class CategoryAdmin(admin.ModelAdmin):
         return new_urls + urls
 
 
-
-
 @admin.register(models.Purchases)
 class PurchasesAdmin(admin.ModelAdmin):
     list_display = (
@@ -81,3 +78,21 @@ class PurchasesAdmin(admin.ModelAdmin):
         "created_at",
     )
     search_fields = ("product", "supplier")
+
+
+@admin.register(models.Supplier)
+class SupplierAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+
+
+@admin.register(models.Sales)
+class SalesAdmin(admin.ModelAdmin):
+    list_display = (
+        "product",
+        "quantity",
+        "price",
+        "date_sold",
+    )
+    search_fields = ("product",)
+    list_filter = ("date_sold",)
+    

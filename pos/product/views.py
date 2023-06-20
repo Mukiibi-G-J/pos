@@ -1,8 +1,4 @@
-from product.form import (
-    CategoryForm,
-    AddProductForm,
-    AddSalesForm,
-)
+from product.form import CategoryForm, AddProductForm, AddSalesForm, AddPurchaseForm
 from datetime import datetime
 import time
 from authentication.models import CustomUser
@@ -15,8 +11,17 @@ import pandas as pd
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.db.models import DateTimeField
-from django.db.models import ExpressionWrapper, F, Func, Value, Sum
-from django.db.models.functions import Trunc, Cast
+from django.db.models import (
+    ExpressionWrapper,
+    F,
+    Func,
+    Value,
+    Sum,
+    DateField,
+    CharField,
+)
+from django.db.models.functions import Trunc, Cast, TruncDate
+
 
 from django.template.loader import render_to_string
 from django.views import generic
@@ -64,11 +69,28 @@ def dashboard(request):
 
     total_no_of_products = Products.objects.all().count()
     total_no_of_sales = Sales.objects.all().count()
+    # sales_of_yesterday = Sales.objects.filter(
+    #     date_sold__date=datetime.date.today() - datetime.timedelta(days=1)
+    # ).aggregate(total_sales=Sum(F("total")))["total_sales"]
     sales_of_yesterday = Sales.objects.filter(
-        date_sold__date=datetime.date.today() - datetime.timedelta(days=1)
+        date_sold__exact=datetime.date.today() - datetime.timedelta(days=1)
     ).aggregate(total_sales=Sum(F("total")))["total_sales"]
+
+    # todays sales
+
+    sales_of_today = Sales.objects.filter(
+        date_sold__exact=datetime.date.today()
+    ).aggregate(total_sales=Sum(F("total")))["total_sales"]
+
+    # ? top selling products
+    top_selling_products = Products.objects.annotate(
+        total_quantity_sold=Sum("sales__quantity")
+    ).order_by("-total_quantity_sold")[:5]
+    print(top_selling_products)
+
     # value_if_true if condition else value_if_false
     total_sales_of_yesterday = sales_of_yesterday if sales_of_yesterday else 0
+    total_sales_of_today = sales_of_today if sales_of_today else 0
     if total_cost_of_sales is not None:
         formatted_total_cost_of_sales = format(int(total_cost_of_sales), ",d")
     else:
@@ -90,9 +112,11 @@ def dashboard(request):
         "total_cost": formatted_total_cost,
         "total_cost_at_selling_price": foramtted_total_cost_at_selling_price,
         "total_sales_of_yesterday": format(int(total_sales_of_yesterday), ",d"),
+        "total_sales_of_today": format(int(total_sales_of_today), ",d"),
         "total_no_of_products": total_no_of_products,
         "total_no_of_sales": total_no_of_sales,
         "total_cost_of_sales": formatted_total_cost_of_sales,
+        "top_selling_products": top_selling_products,
     }
     return render(request, "dashboard/dashboard.html", context)
 
@@ -212,7 +236,7 @@ def add_single_sell(request):
             price=price,
             discount=discount,
         )
-        return redirect("products:list_sales")
+        return redirect("products:add_single_sell")
 
     return render(
         request,
@@ -331,7 +355,29 @@ def complete_sale(request):
 
 class ListSale(generic.View):
     def get(self, request, *args, **kwargs):
-        sales = Sales.objects.all()
+        sales = (
+            Sales.objects.all()
+            .order_by("-date_sold")
+            .annotate(
+                total_profit=Sum((F("price") - F("current_cost_price")) * F("quantity"))
+            )  # .annotate(actual_stock_left=F("product__quantity_in_stock"))
+        )
+        # edit date format to Tuesday 09 March 2021
+        # my_sales = []
+        # for sale in sales:
+        #     sale.date_sold = sale.date_sold.strftime("%A %d %B %Y")
+        #     print(sale.date_sold)
+        #     my_sales.append(sale)
+
+        # # order my_sales list by date_sold such that thursday 11 march 2021 come after wednesday 10 march 2021
+        # my_sales = sorted(
+        #     my_sales,
+        #     key=lambda x: x.date_sold.date(),
+        #     reverse=True,
+        # )
+
+        # print(my_sales)
+
         todays_total_sales = Sales.objects.filter(timestamp__date=datetime.date.today())
         todays_total_sales = sum([sale.total for sale in todays_total_sales])
         todays_total_sales = "{:,.0f}".format(todays_total_sales)
@@ -343,10 +389,46 @@ class ListSale(generic.View):
 # ? --------------------------- Purchases ---------------------------
 class AddPurchase(generic.View):
     form_class = FileUploadForm
+    form_purchase = AddPurchaseForm
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()
-        return render(request, "purchases/add_purchases.html", {"form": form})
+        form_purchase = self.form_purchase()
+        return render(
+            request,
+            "purchases/add_purchases.html",
+            {"form": form, "form_purchase": form_purchase},
+        )
+
+
+def add_single_purchase(request):
+    form = FileUploadForm
+    form_purchase = AddPurchaseForm
+    if request.method == "POST":
+        product = Products.objects.get(product_code=request.POST.get("product_uuid"))
+        quantity = request.POST.get("quantity")
+        purchase_price = request.POST.get("purchase_price")
+        supplier = Supplier.objects.get(id=request.POST.get("supplier"))
+        purchase_date = request.POST.get("purchase_date")
+        purchase = Purchases.objects.create(
+            product=product,
+            quantity=quantity,
+            purchase_price=purchase_price,
+            purchase_date=purchase_date,
+            supplier=supplier,
+        )
+        purchase.save()
+        product = Products.objects.get(product_code=request.POST.get("product_uuid"))
+        product.quantity_in_stock += int(quantity)
+        product.save()
+
+        return redirect("products:add_purchases")
+
+    return render(
+        request,
+        "purchases/add_purchases.html",
+        {"form": form, "form_purchase": form_purchase},
+    )
 
 
 class ListPurchase(generic.ListView):
@@ -360,7 +442,7 @@ class ListPurchase(generic.ListView):
             total_quantity=F("quantity") * F("purchase_price")
         )
         print(context["purchases"])
-        
+
         return context
 
 
@@ -815,7 +897,63 @@ def products_list(request):
 
 
 def reports(request):
-    return render(request, "reports/reports.html")
+    # ? getting a single date  form the purchases query set
+    purchases_dates = (
+        Purchases.objects.all()
+        .values("purchase_date")
+        .order_by("purchase_date")
+        .distinct()
+    )
+
+    # ? weekly profit
+    from django.db.models.functions import TruncWeek
+
+    weekly_profit = (
+        Sales.objects.annotate(week_start=TruncWeek("timestamp"))
+        .values("week_start")
+        .annotate(
+            total_profit=Sum((F("price") - F("current_cost_price")) * F("quantity"))
+            # total_profit=Sum(
+            # (F("price") - F("current_cost_price")) * F("quantity") - F("discount") * F("quantity")
+            # )
+        )
+        .order_by("week_start")
+    )
+
+    for week_profit in weekly_profit:
+        week_profit["week_start"] = week_profit["week_start"].strftime("%A, %B %d, %Y")
+
+    print(weekly_profit)
+    if purchases_dates:
+        for date in purchases_dates:
+            # multiping the quantity and purchase_price to get the total
+            # print(date["purchase_date"])
+            # purchases_sum = Purchases.objects.filter(
+            #     purchase_date=date["purchase_date"]
+            # ).aggregate(total_purchase_price=Sum(F("quantity") * F("purchase_price")))
+            # context = {
+            #     "purchases": {
+            #         "purchases_dates": date["purchase_date"],
+            #         "purchases_sum": format(purchases_sum["total_purchase_price"], ",d"),
+            #     }
+            # }
+            purchases = (
+                Purchases.objects.values("purchase_date")
+                .annotate(total_purchase_price=Sum(F("quantity") * F("purchase_price")))
+                .order_by("purchase_date")
+            )
+            for purchase in purchases:
+                # formating date to "Tuesday, April 25, 2023"
+                purchase["purchase_date"] = purchase["purchase_date"].strftime(
+                    "%A, %B %d, %Y"
+                )
+
+    # purchases_sum = Purchases.objects.aggregate(Sum("total"))
+    return render(
+        request,
+        "reports/reports.html",
+        {"purchases": purchases, "weekly_profit": weekly_profit},
+    )
 
 
 # ?  ----------export to excel----------------
@@ -908,7 +1046,8 @@ def export_all_products_excel(request):
             category_name=F("category_id__category_name"),
             brand_name=F("brand__brand_name"),
             product_image=F("product_image"),
-        ).order_by('product_name')
+        )
+        .order_by("product_name")
     )
     for row in rows:
         row_num += 1
@@ -935,25 +1074,35 @@ def export_all_sales_excel(request):
         "Current Cost Price",
         "Product Code",
         "Product Name",
+        "Date",
     ]
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
 
     font_style = xlwt.XFStyle()
-    rows = (
+    list = (
         Sales.objects.all()
+        .annotate(
+            product_code=F("product__product_code"),
+            product_name=F("product__product_name"),
+        )
         .values_list(
+            "date_sold",
             "price",
             "discount",
             "stock_left",
             "quantity",
             "current_cost_price",
-        )
-        .annotate(
-            product_code=F("product__product_code"),
-            product_name=F("product__product_name"),
+            "product_code",
+            "product_name",
         )
     )
+    # getting date from the tuple and formating it to "Tuesday, April 25, 2023"
+    rows = []
+    for item in list:
+        date = item[0].strftime("%A, %B %d, %Y")
+        rows.append(item[1:] + (date,))
+
     for row in rows:
         row_num += 1
         for col_num in range(len(row)):

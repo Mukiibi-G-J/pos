@@ -30,6 +30,7 @@ urlpatterns = [
         views.generate_purchase_list,
         name="generate_purchase_list",
     ),
+    path("add_single_purchase", views.add_single_purchase, name="add_single_purchase"),
     path("add_single_sell", views.add_single_sell, name="add_single_sell"),
     path("upload_purchase", views.upload_purchase, name="upload_purchase"),
     #!report

@@ -118,7 +118,7 @@ class Sales(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     # sale = models.ForeignKey(Sale, on_delete=models.CASCADE)
-    date_sold = models.DateTimeField()
+    date_sold = models.DateField()
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     price = models.IntegerField()
@@ -128,7 +128,7 @@ class Sales(models.Model):
     current_cost_price = models.IntegerField()
 
     def __str__(self):
-        return f"{self.product} sold by {self.user}"
+        return f"{self.product.product_name} sold by {self.user}"
 
     # @property
     # def total_sales_of_today(self):
@@ -157,10 +157,12 @@ class Sales(models.Model):
         super(Sales, self).save(*args, **kwargs)
 
 
-
 class Supplier(models.Model):
     name = models.CharField(max_length=255)
     
+    def __str__(self):
+        return self.name
+
 
 class Purchases(models.Model):
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
@@ -169,4 +171,3 @@ class Purchases(models.Model):
     purchase_date = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
-    

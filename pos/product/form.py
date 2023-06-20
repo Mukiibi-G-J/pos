@@ -1,7 +1,7 @@
 from re import A
 from django.forms import ImageField, ModelForm, TextInput, ModelChoiceField, Form
 from django import forms
-from .models import Category, Products, Sales
+from .models import Category, Products, Sales, Purchases, Supplier
 from django_select2.forms import ModelSelect2Widget
 
 
@@ -44,7 +44,7 @@ class AddProductForm(ModelForm):
     class Meta:
         model = Products
         fields = [
-           "product_image",
+            "product_image",
             "product_name",
             "category_id",
             "quantity_in_stock",
@@ -54,7 +54,7 @@ class AddProductForm(ModelForm):
             "unit_of_measure",
             "brand",
             "export_csv",
-            "description"
+            "description",
         ]
 
         widgets = {
@@ -98,7 +98,6 @@ class AddProductForm(ModelForm):
                     "placeholder": "Enter Reorder Level",
                 }
             ),
-            
             # "category_id":ModelChoiceField(queryset=Category.objects.all(), to_field_name="type")
         }
 
@@ -108,8 +107,6 @@ class FileUploadForm(Form):
 
 
 class AddSalesForm(ModelForm):
-    
-
     class Meta:
         model = Sales
         fields = [
@@ -118,4 +115,17 @@ class AddSalesForm(ModelForm):
             "price",
             "discount",
             "date_sold",
+        ]
+
+
+class AddPurchaseForm(ModelForm):
+    
+    class Meta:
+        model = Purchases
+        fields = [
+            "product",
+            "quantity",
+            "purchase_price",
+            "purchase_date",
+            "supplier",
         ]

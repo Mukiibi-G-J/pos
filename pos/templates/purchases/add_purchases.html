@@ -203,141 +203,84 @@
               </div>
             </div>
             <div class="card-body">
-              <form action="page-list-purchase.html" data-toggle="validator">
+              <form action="{% url 'products:add_single_purchase' %}" data-toggle="validator" method="POST">
+                {% csrf_token %}
+
                 <div class="row">
-                  <div class="col-md-12">
+                  <div class="col-md-6">
                     <div class="form-group">
                       <label for="dob">Date *</label>
-                      <input
-                        type="date"
-                        class="form-control"
-                        id="dob"
-                        name="dob"
-                      />
+                      {% render_field form_purchase.purchase_date class="form-control" type="date" required="required" %}
+                      
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label>Purchase No *</label>
+                      <label>Search Product</label>
                       <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Purchase No"
-                        required
-                      />
+                      type="search"
+                      class="form-control"
+                      placeholder="Search Product"
+                    
+                      id="foreign_key_input"
+                    />
                       <div class="help-block with-errors"></div>
+                    </div>
+                    <div class="modal-body container" id="results-box-single-sale"></div>
+                    {% csrf_token %}
+                    
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Code *</label>
+                      <input
+                      type="text"
+                      class="form-control"
+                      name = "product_uuid"
+                      data-errors="Please Enter Cost."
+                      id="product_code"
+                      readonly
+                    />
+                    <div class="help-block with-errors"></div>
+  
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Name *</label>
+                      <input
+                      type="text"
+                      class="form-control"
+                      name="product_name"
+                      data-errors="Please Enter Cost."
+                      id="product_name"
+                      readonly
+                    />
+                    <div class="help-block with-errors"></div>
+
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Quantity</label>
+                      {% render_field form_purchase.quantity class="form-control" %}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Purchase Price</label>
+                     {% render_field form_purchase.purchase_price class="form-control"  %}
+
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Supplier</label>
-                      <select
-                        name="type"
-                        class="selectpicker form-control"
-                        data-style="py-0"
-                      >
-                        <option>Select Supplier</option>
-                        <option>Test Supplier</option>
-                      </select>
+                      {% render_field form_purchase.supplier class="form-control" %}
                     </div>
                   </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Received</label>
-                      <select
-                        name="type"
-                        class="selectpicker form-control"
-                        data-style="py-0"
-                      >
-                        <option>Received</option>
-                        <option>Not received yet</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Order Tax</label>
-                      <select
-                        name="type"
-                        class="selectpicker form-control"
-                        data-style="py-0"
-                      >
-                        <option>No Text</option>
-                        <option>GST @5%</option>
-                        <option>VAT @20%</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Discount</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Discount"
-                      />
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Shipping</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Shipping"
-                      />
-                    </div>
-                  </div>
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <label>Payment *</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Payment"
-                        required
-                      />
-                      <div class="help-block with-errors"></div>
-                    </div>
-                  </div>
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <label>Note *</label>
-                      <div id="quill-tool">
-                        <button
-                          class="ql-bold"
-                          data-toggle="tooltip"
-                          data-placement="bottom"
-                          title="Bold"
-                        ></button>
-                        <button
-                          class="ql-underline"
-                          data-toggle="tooltip"
-                          data-placement="bottom"
-                          title="Underline"
-                        ></button>
-                        <button
-                          class="ql-italic"
-                          data-toggle="tooltip"
-                          data-placement="bottom"
-                          title="Add italic text <cmd+i>"
-                        ></button>
-                        <button
-                          class="ql-image"
-                          data-toggle="tooltip"
-                          data-placement="bottom"
-                          title="Upload image"
-                        ></button>
-                        <button
-                          class="ql-code-block"
-                          data-toggle="tooltip"
-                          data-placement="bottom"
-                          title="Show code"
-                        ></button>
-                      </div>
-                      <div id="quill-toolbar"></div>
-                    </div>
-                  </div>
+                 
+                 
                 </div>
                 <button type="submit" class="btn btn-primary mr-2">
                   Add Purchase

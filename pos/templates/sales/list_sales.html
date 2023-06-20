@@ -44,7 +44,7 @@
                   <th>Product Name</th>
                   <th>Quantity</th>
                   <th>Paid</th>
-
+                  <th>profit</th>
                   <th>Biller</th>
                   <th>Discount</th>
                   <th>Stock Left</th>
@@ -71,6 +71,7 @@
                   <td>{{ sale.product.product_name }}</td>
                   <td>{{ sale.quantity }}</td>
                   <td>{{ sale.total }}</td>
+                  <td>{{ sale.total_profit}} </td>
                   <td>{{ sale.user.username }}</td>
                   <td>{{ sale.discount }}</td>
                   <td>{{ sale.stock_left }}</td>
