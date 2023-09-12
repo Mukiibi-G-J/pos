@@ -39,8 +39,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 # openpyxl
 from openpyxl import load_workbook
 import uuid
-from barcode import Code128, Code39
-from barcode.writer import ImageWriter
+# from barcode import Code128, Code39
+# from barcode.writer import ImageWriter
 import uuid
 from django.conf import settings
 import os

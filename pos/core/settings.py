@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-u@$7dskd^sa_ve%9^n$%q(zp&5xnk^(4ufwj@(e2e89#(!7hd*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     #! My apps
     "authentication",
     "product",
-    #! Third party apps
+        #! Third party apps
     "widget_tweaks",
     "django.contrib.humanize",  # ? for humanize numbers in templates (1,000,000)
     "django_select2",
@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
