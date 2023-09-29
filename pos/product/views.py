@@ -1,8 +1,8 @@
 from product.form import CategoryForm, AddProductForm, AddSalesForm, AddPurchaseForm
-from datetime import datetime
+from datetime import datetime, date
 import time
 from authentication.models import CustomUser
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .utils import generate_random_code
 from product.models import *
 from django.http import JsonResponse, HttpResponse
@@ -31,14 +31,13 @@ import re
 
 import xlwt
 
-
 # ???  decorator
 from django.contrib.auth.decorators import login_required, user_passes_test
-
 
 # openpyxl
 from openpyxl import load_workbook
 import uuid
+
 # from barcode import Code128, Code39
 # from barcode.writer import ImageWriter
 import uuid
@@ -52,10 +51,8 @@ def is_admin(user):
 
 
 @login_required
-# @user_passes_test(is_admin)
 def dashboard(request):
     # get the value of all your store products at cost price
-
     total_cost = Products.objects.aggregate(
         total_cost=Sum(F("unit_price") * F("quantity_in_stock"))
     )["total_cost"]
@@ -138,6 +135,14 @@ class ProductList(generic.View):
         products_form = AddProductForm()
         context = {"products": products, "products_form": products_form}
         return render(request, self.template_name, context)
+
+    # def post(self, request, *args, **kwargs ):
+
+
+def get_single_product(request, pk):
+    # if request.method == "GET"
+    product = get_object_or_404(Products, pk)
+    return JsonResponse("product")
 
 
 @login_required
@@ -378,7 +383,7 @@ class ListSale(generic.View):
 
         # print(my_sales)
 
-        todays_total_sales = Sales.objects.filter(timestamp__date=datetime.date.today())
+        todays_total_sales = Sales.objects.filter(date_sold=datetime.date.today())
         todays_total_sales = sum([sale.total for sale in todays_total_sales])
         todays_total_sales = "{:,.0f}".format(todays_total_sales)
 
@@ -922,7 +927,9 @@ def reports(request):
 
     for week_profit in weekly_profit:
         week_profit["week_start"] = week_profit["week_start"].strftime("%A, %B %d, %Y")
-
+        # week_profit["week_start_orgi"] = week_profit["week_start"].strftime(
+        #     "%A, %B %d, %Y"
+        # )
     print(weekly_profit)
     if purchases_dates:
         for date in purchases_dates:
@@ -954,6 +961,11 @@ def reports(request):
         "reports/reports.html",
         {"purchases": purchases, "weekly_profit": weekly_profit},
     )
+
+
+def get_profit_for_single_date(request, pk):
+    print(pk)
+    return "hello"
 
 
 # ?  ----------export to excel----------------

@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-u@$7dskd^sa_ve%9^n$%q(zp&5xnk^(4ufwj@(e2e89#(!7hd*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -41,15 +41,19 @@ INSTALLED_APPS = [
     #! My apps
     "authentication",
     "product",
-        #! Third party apps
+    #! Third party apps
     "widget_tweaks",
+    "django_htmx",
     "django.contrib.humanize",  # ? for humanize numbers in templates (1,000,000)
     "django_select2",
+    "mptt",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    # third patry
+    "django_htmx.middleware.HtmxMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -115,11 +119,12 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "en-us"
 
 
-TIME_ZONE = 'Africa/Kampala'
+TIME_ZONE = "Africa/Kampala"
 
 USE_I18N = True
 
 USE_TZ = True
+APPEND_SLASH = False
 
 
 # Static files (CSS, JavaScript, Images)

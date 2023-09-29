@@ -4,6 +4,14 @@ from django.utils import timezone
 
 import datetime
 from django.core.exceptions import ValidationError
+from mptt.models import TreeForeignKey, MPTTModel
+
+
+class Supplier(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
 
 
 class Brand(models.Model):
@@ -20,13 +28,17 @@ class Product_Unit(models.Model):
         return self.unit_name
 
 
-class Category(models.Model):
+class Category(MPTTModel):
     category_name = models.CharField(
-        max_length=255, null=False, blank=False, unique=True
+        max_length=255,
+        null=False,
+        blank=False,
+        unique=True,
     )
     category_image = models.ImageField(
         null=True, default="images/default.png", upload_to="images/"
     )
+    parent = TreeForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         db_table = "Category"
@@ -58,7 +70,7 @@ class Products(models.Model):
     unit_of_measure = models.CharField(
         max_length=255, choices=unit_name, help_text="For example pcs or dozen"
     )
-    category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category_id = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     quantity_in_stock = models.IntegerField(default=0, null=True)
     unit_price = models.FloatField(default=0)
     cost = models.FloatField(default=0)
@@ -69,6 +81,7 @@ class Products(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     publish = models.DateTimeField(default=timezone.now)
     new_arrival = models.BooleanField(default=False)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, default=1)
 
     def clean(self):
         if self.quantity_in_stock is not None and self.quantity_in_stock < 0:
@@ -119,7 +132,7 @@ class Sales(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     # sale = models.ForeignKey(Sale, on_delete=models.CASCADE)
     date_sold = models.DateField()
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    product = models.ForeignKey(Products, on_delete=models.DO_NOTHING)
     quantity = models.PositiveIntegerField()
     price = models.IntegerField()
     discount = models.IntegerField(default=0)
@@ -142,32 +155,30 @@ class Sales(models.Model):
         ordering = ["-timestamp"]
 
     def save(self, *args, **kwargs):
-        if self.product.quantity_in_stock < self.quantity:
-            raise Exception("Not enough stock")
-        else:
-            print(kwargs)
+        if not self.pk:
+            if self.product.quantity_in_stock < self.quantity:
+                raise Exception("Not enough stock")
+            else:
+                print(kwargs)
 
-            self.product.quantity_in_stock = (
-                self.product.quantity_in_stock - kwargs.get("quantity", self.quantity)
-            )
-            self.stock_left = self.product.quantity_in_stock
-            self.current_cost_price = self.product.unit_price
-            self.product.save()
+                self.product.quantity_in_stock = (
+                    self.product.quantity_in_stock
+                    - kwargs.get("quantity", self.quantity)
+                )
+                self.stock_left = self.product.quantity_in_stock
+                self.current_cost_price = self.product.unit_price
+                self.product.save()
 
         super(Sales, self).save(*args, **kwargs)
-
-
-class Supplier(models.Model):
-    name = models.CharField(max_length=255)
-    
-    def __str__(self):
-        return self.name
 
 
 class Purchases(models.Model):
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     purchase_price = models.IntegerField()
-    purchase_date = models.DateTimeField()
+    purchase_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.product.product_name

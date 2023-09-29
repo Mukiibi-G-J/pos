@@ -5,6 +5,7 @@ from django.urls import path, reverse
 from django import forms
 from django.contrib import messages
 from django.http import HttpResponseRedirect
+from mptt.admin import MPTTModelAdmin
 
 admin.site.site_header = "Semuna POS"
 
@@ -16,6 +17,7 @@ class ModleAdmin(admin.ModelAdmin):
         "product_code",
         "product_name",
         "unit_price",
+        "quantity_in_stock",
         "cost",
         "reorder_level",
         "new_arrival",
@@ -34,7 +36,7 @@ class CategoryAdminCSV(forms.Form):
 
 
 @admin.register(models.Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(MPTTModelAdmin):
     list_display = ["category_name", "category_image"]
 
     def upload_csv(self, request):
@@ -95,4 +97,3 @@ class SalesAdmin(admin.ModelAdmin):
     )
     search_fields = ("product",)
     list_filter = ("date_sold",)
-    

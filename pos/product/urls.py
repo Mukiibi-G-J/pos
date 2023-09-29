@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import urlencode
+from django.urls import re_path
 
 
 app_name = "products"
@@ -44,6 +45,29 @@ urlpatterns = [
     ),
     # export to excel
     path("export_to_excel", views.export_to_excel, name="export_to_excel"),
-    path("export_all_products_excel", views.export_all_products_excel, name="export_all_products_excel"),
-    path("export_all_sales_excel", views.export_all_sales_excel, name="export_all_sales_excel"),
+    path(
+        "export_all_products_excel",
+        views.export_all_products_excel,
+        name="export_all_products_excel",
+    ),
+    path(
+        "export_all_sales_excel",
+        views.export_all_sales_excel,
+        name="export_all_sales_excel",
+    ),
+]
+
+# htmx
+
+urlpatterns += [
+    path(
+        "get_single_product/<str:pk>/",
+        views.get_single_product,
+        name="update_product",
+    ),
+    re_path(
+        "get_profit_for_single_date/<str:date>",
+        views.get_profit_for_single_date,
+        name="get_profit_for_date",
+    ),
 ]

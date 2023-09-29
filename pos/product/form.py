@@ -55,6 +55,7 @@ class AddProductForm(ModelForm):
             "brand",
             "export_csv",
             "description",
+            'supplier'
         ]
 
         widgets = {

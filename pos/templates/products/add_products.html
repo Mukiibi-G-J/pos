@@ -246,7 +246,7 @@
                   </div>
                 </div>
            
-                <div class="col-md-12">
+                <div class="col-md-6">
                   <div class="form-group">
                     <label>Image</label>
                     {% comment %} <input
@@ -255,6 +255,12 @@
                       name="pic"
                       accept="image/*"
                     /> {% endcomment %}
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Supplier</label>
+                    {% render_field form.supplier class="form-control" %}
                   </div>
                 </div>
                 <div class="col-md-12">
