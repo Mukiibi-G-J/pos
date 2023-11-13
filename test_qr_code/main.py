@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtCore import *
+from PyQt5.j import *
 import sys
 
 
@@ -16,3 +16,4 @@ app = QApplication(sys.argv)
 window = MainWindow()
 window.show()
 sys.exit(app.exec_())
+
