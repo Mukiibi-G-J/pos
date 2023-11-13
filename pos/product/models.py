@@ -65,7 +65,7 @@ class Products(models.Model):
     )
     product_code = models.CharField(max_length=55, blank=False, null=False, unique=True)
     # prouct_imgae = models.ImageField()
-    product_name = models.CharField(max_length=255, blank=False, null=False)
+    product_name = models.CharField(max_length=255, blank=False, null=False, unique=True)
     description = models.TextField(max_length=255, blank=False, null=False)
     unit_of_measure = models.CharField(
         max_length=255, choices=unit_name, help_text="For example pcs or dozen"
@@ -180,5 +180,7 @@ class Purchases(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
 
+    
+    
     def __str__(self):
         return self.product.product_name

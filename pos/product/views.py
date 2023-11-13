@@ -186,9 +186,9 @@ def add_single_product(request):
         selling_price = request.POST["cost"]
         quantity_in_stock = request.POST["quantity_in_stock"]
         brand_name = request.POST["brand"]
-        unit_of_measure = request.POST["unit_of_measure"]
-        reorder_level = request.POST["reorder_level"]
-        description = request.POST["description"]
+        unit_of_measure = request.POST.get("unit_of_measure", 'pcs')
+        reorder_level = request.POST.get("reorder_level", 0)
+        description = request.POST.get("description", 'none')
         # product_image = request.FILES["pic"]
 
         category = Category.objects.get(id=category)
@@ -273,6 +273,7 @@ class AddSale(generic.View):
                     "name": i.product_name,
                     "price": i.cost,
                     "description": i.description,
+                    "purchase_price":i.unit_price
                 }
                 data.append(item)
             res = data
@@ -395,6 +396,8 @@ class ListSale(generic.View):
 class AddPurchase(generic.View):
     form_class = FileUploadForm
     form_purchase = AddPurchaseForm
+    products_form  = AddProductForm()
+    
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()
@@ -402,13 +405,14 @@ class AddPurchase(generic.View):
         return render(
             request,
             "purchases/add_purchases.html",
-            {"form": form, "form_purchase": form_purchase},
+            {"form": form, "form_purchase": form_purchase, "products_form":self.products_form},
         )
 
 
 def add_single_purchase(request):
     form = FileUploadForm
     form_purchase = AddPurchaseForm
+    products_form  = AddProductForm()
     if request.method == "POST":
         product = Products.objects.get(product_code=request.POST.get("product_uuid"))
         quantity = request.POST.get("quantity")
@@ -424,15 +428,18 @@ def add_single_purchase(request):
         )
         purchase.save()
         product = Products.objects.get(product_code=request.POST.get("product_uuid"))
+        product.unit_price =purchase_price
         product.quantity_in_stock += int(quantity)
         product.save()
 
         return redirect("products:add_purchases")
-
+    print(form_purchase)
     return render(
         request,
         "purchases/add_purchases.html",
-        {"form": form, "form_purchase": form_purchase},
+        {"form": form, "form_purchase": form_purchase,
+         "products_form":products_form
+         },
     )
 
 
@@ -886,6 +893,8 @@ def get_product_by_uuid(request, uuid):
             "product_name": product.product_name,
             "sales_price": product.cost,
             "product_uuid": product.product_code,
+            "purchase_price":product.unit_price
+            
         }
         print(data)
         return JsonResponse(data)

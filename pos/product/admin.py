@@ -72,15 +72,17 @@ class CategoryAdmin(MPTTModelAdmin):
 @admin.register(models.Purchases)
 class PurchasesAdmin(admin.ModelAdmin):
     list_display = (
-        "product",
+        "get_product_name",
         "quantity",
         "purchase_price",
         "purchase_date",
         "supplier",
         "created_at",
     )
-    search_fields = ("product", "supplier")
+    search_fields = ("product__product_name", "supplier__name")
 
+    def get_product_name(self, obj):
+        return obj.product.product_name
 
 @admin.register(models.Supplier)
 class SupplierAdmin(admin.ModelAdmin):
@@ -90,10 +92,14 @@ class SupplierAdmin(admin.ModelAdmin):
 @admin.register(models.Sales)
 class SalesAdmin(admin.ModelAdmin):
     list_display = (
-        "product",
+        "get_product_name",
         "quantity",
         "price",
         "date_sold",
     )
-    search_fields = ("product",)
+    search_fields = ("product__product_name",)
+    
     list_filter = ("date_sold",)
+
+    def get_product_name(self, obj):
+        return obj.product.product_name

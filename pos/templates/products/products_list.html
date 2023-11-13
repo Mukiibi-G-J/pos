@@ -3,7 +3,6 @@
     {% load humanize %}
     {% load static %}
 
-
     <div class="content-page">
         <div class="container-fluid">
             <div class="row">
@@ -24,6 +23,8 @@
                                 data-target="#exampleModalCenter">
                             Add Products
                         </button>
+    <button type="button" class="btn btn-lg btn-danger mt-2" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">Click to toggle popover</button>
+
                     </div>
                 </div>
                 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
@@ -162,6 +163,9 @@
                                                 {% comment %}<p class="mb-0"><small>This is test Product</small>
                                                 </p> {% endcomment %}
                                             </div>
+                                            <button type="button" class="btn btn-lg btn-danger mt-2" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">Click to toggle popover</button>
+
+                                        </div>
                                             <a href={{ product.product_image.url }} target="_blank">
                                                 <img
                                                         src="{{ product.product_image.url }}"

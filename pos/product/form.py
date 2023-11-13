@@ -99,8 +99,12 @@ class AddProductForm(ModelForm):
                     "placeholder": "Enter Reorder Level",
                 }
             ),
+           
             # "category_id":ModelChoiceField(queryset=Category.objects.all(), to_field_name="type")
         }
+    def __init__(self, *args, **kwargs):
+        super(AddProductForm, self).__init__(*args, **kwargs)
+        self.fields['category_id'].queryset = Category.objects.order_by('category_name')
 
 
 class FileUploadForm(Form):
