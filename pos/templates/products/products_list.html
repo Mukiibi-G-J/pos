@@ -23,7 +23,6 @@
                                 data-target="#exampleModalCenter">
                             Add Products
                         </button>
-    <button type="button" class="btn btn-lg btn-danger mt-2" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">Click to toggle popover</button>
 
                     </div>
                 </div>
@@ -163,7 +162,6 @@
                                                 {% comment %}<p class="mb-0"><small>This is test Product</small>
                                                 </p> {% endcomment %}
                                             </div>
-                                            <button type="button" class="btn btn-lg btn-danger mt-2" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">Click to toggle popover</button>
 
                                         </div>
                                             <a href={{ product.product_image.url }} target="_blank">
@@ -171,6 +169,7 @@
                                                         src="{{ product.product_image.url }}"
                                                         class="img-fluid rounded avatar-50 mr-3"
                                                         alt="image"
+                                                        id="scale_image_product"
                                                 />
                                             </a>
 
