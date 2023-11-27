@@ -49,13 +49,14 @@ class AddProductForm(ModelForm):
             "category_id",
             "quantity_in_stock",
             "unit_price",
+            "new_stock",
             "cost",
             "reorder_level",
             "unit_of_measure",
             "brand",
             "export_csv",
             "description",
-            'supplier'
+            "supplier",
         ]
 
         widgets = {
@@ -99,12 +100,22 @@ class AddProductForm(ModelForm):
                     "placeholder": "Enter Reorder Level",
                 }
             ),
-           
+            "new_stock": TextInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+            "quantity_in_stock": TextInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
             # "category_id":ModelChoiceField(queryset=Category.objects.all(), to_field_name="type")
         }
+
     def __init__(self, *args, **kwargs):
         super(AddProductForm, self).__init__(*args, **kwargs)
-        self.fields['category_id'].queryset = Category.objects.order_by('category_name')
+        self.fields["category_id"].queryset = Category.objects.order_by("category_name")
 
 
 class FileUploadForm(Form):
@@ -124,7 +135,6 @@ class AddSalesForm(ModelForm):
 
 
 class AddPurchaseForm(ModelForm):
-    
     class Meta:
         model = Purchases
         fields = [

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from . import models
+from django.db import models as model
 from django.shortcuts import render
 from django.urls import path, reverse
 from django import forms
@@ -10,7 +11,28 @@ from mptt.admin import MPTTModelAdmin
 admin.site.site_header = "Semuna POS"
 
 
-# <------decorater------------>
+# <------customer filter ------------>
+class NewStockFilter(admin.SimpleListFilter):
+    title = "New Stock"
+    parameter_name = "new_stock"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("positive", "Greater than zero"),
+            ("non_positive", "Zero or less"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "positive":
+            return queryset.filter(new_stock__gt=0)
+        elif self.value() == "non_positive":
+            return queryset.filter(new_stock__lte=0)
+
+
+# class NoArrowsNumberInput(forms.widgets.NumberInput):
+#     template_name = "admin/widgets/no_arrows_number_input.html"
+
+
 @admin.register(models.Products)
 class ModleAdmin(admin.ModelAdmin):
     list_display = (
@@ -18,12 +40,23 @@ class ModleAdmin(admin.ModelAdmin):
         "product_name",
         "unit_price",
         "quantity_in_stock",
+        "new_stock",
         "cost",
         "reorder_level",
         "new_arrival",
     )
-    search_fields = ("product_code", "product_name")
+
+    search_fields = (
+        "product_code",
+        "product_name",
+        "quantity_in_stock",
+    )
     order_by = "created_at"
+    list_filter = (NewStockFilter,)
+
+    # formfield_overrides = {
+    #     model.IntegerField: {"widget": NoArrowsNumberInput},
+    # }
 
 
 admin.site.register(models.Brand)
@@ -84,6 +117,7 @@ class PurchasesAdmin(admin.ModelAdmin):
     def get_product_name(self, obj):
         return obj.product.product_name
 
+
 @admin.register(models.Supplier)
 class SupplierAdmin(admin.ModelAdmin):
     list_display = ("name",)
@@ -98,7 +132,7 @@ class SalesAdmin(admin.ModelAdmin):
         "date_sold",
     )
     search_fields = ("product__product_name",)
-    
+
     list_filter = ("date_sold",)
 
     def get_product_name(self, obj):

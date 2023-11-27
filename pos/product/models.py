@@ -65,7 +65,7 @@ class Products(models.Model):
     )
     product_code = models.CharField(max_length=55, blank=False, null=False, unique=True)
     # prouct_imgae = models.ImageField()
-    product_name = models.CharField(max_length=255, blank=False, null=False, unique=True)
+    product_name = models.CharField(max_length=255, blank=False, null=False)
     description = models.TextField(max_length=255, blank=False, null=False)
     unit_of_measure = models.CharField(
         max_length=255, choices=unit_name, help_text="For example pcs or dozen"
@@ -75,6 +75,7 @@ class Products(models.Model):
     unit_price = models.FloatField(default=0)
     cost = models.FloatField(default=0)
     reorder_level = models.IntegerField(default=0, null=True)
+    new_stock= models.CharField( default=0, max_length=255,blank=True,null=True,)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     export_csv = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

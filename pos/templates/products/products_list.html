@@ -208,7 +208,7 @@
                                                   title=""
                                                   data-original-title="Edit"
 
-                                                  hx-get="/get_single_product/"{{  product.pk }}
+                                                  hx-get="get_single_product/{{  product.pk }}/"
                                                   hx-trigger="click"
                                                   hx-target="#parent-div"
                                                   hx-swap="outerHTML"
@@ -287,6 +287,29 @@
                                     <label>selling Price</label>
 
                                     {{ products_form.cost }}
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Current Stock</label>
+
+                                    {{ products_form.quantity_in_stock }}
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>New Stock</label>
+
+                                    {{ products_form.new_stock }}
                                     <div class="help-block with-errors"></div>
                                 </div>
                             </div>

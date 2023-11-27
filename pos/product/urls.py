@@ -55,16 +55,21 @@ urlpatterns = [
         views.export_all_sales_excel,
         name="export_all_sales_excel",
     ),
-]
-
-# htmx
-
-urlpatterns += [
     path(
         "get_single_product/<str:pk>/",
         views.get_single_product,
         name="update_product",
     ),
+]
+
+# htmx
+
+urlpatterns += [
+    # path(
+    #     "get_single_product/<str:pk>/",
+    #     views.get_single_product,
+    #     name="update_product",
+    # ),
     re_path(
         "get_profit_for_single_date/<str:date>",
         views.get_profit_for_single_date,
