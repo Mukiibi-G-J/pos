@@ -19,6 +19,7 @@ from django.db.models import (
     Sum,
     DateField,
     CharField,
+    FloatField
 )
 from django.db.models.functions import Trunc, Cast, TruncDate
 
@@ -64,6 +65,8 @@ def dashboard(request):
         "total_cost"
     ]
 
+    total_purchase_cost = Products.objects.annotate(new__stock= Cast('new_stock', FloatField())).aggregate(purchase_cost= Sum(F("unit_price") * F(("new__stock"))))
+    print(total_purchase_cost)
     total_no_of_products = Products.objects.all().count()
     total_no_of_sales = Sales.objects.all().count()
     # sales_of_yesterday = Sales.objects.filter(
@@ -114,6 +117,7 @@ def dashboard(request):
         "total_no_of_sales": total_no_of_sales,
         "total_cost_of_sales": formatted_total_cost_of_sales,
         "top_selling_products": top_selling_products,
+        "total_purchase_cost": format(int(total_purchase_cost['purchase_cost']), ",d"),
     }
     return render(request, "dashboard/dashboard.html", context)
 
