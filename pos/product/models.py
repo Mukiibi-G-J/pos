@@ -83,6 +83,7 @@ class Products(models.Model):
     publish = models.DateTimeField(default=timezone.now)
     new_arrival = models.BooleanField(default=False)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, default=1)
+    stock_take_done = models.BooleanField(default=False)
 
     def clean(self):
         if self.quantity_in_stock is not None and self.quantity_in_stock < 0:

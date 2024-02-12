@@ -15,6 +15,7 @@ admin.site.site_header = "Semuna POS"
 class NewStockFilter(admin.SimpleListFilter):
     title = "New Stock"
     parameter_name = "new_stock"
+    
 
     def lookups(self, request, model_admin):
         return (
@@ -27,7 +28,25 @@ class NewStockFilter(admin.SimpleListFilter):
             return queryset.filter(new_stock__gt=0)
         elif self.value() == "non_positive":
             return queryset.filter(new_stock__lte=0)
+        
+class StockTakeFilter(admin.SimpleListFilter):
+    title = "Stock Count"
+    parameter_name = "stock_take_done"
+    
 
+    def lookups(self, request, model_admin):
+        return (
+            ("No", "Stock Take not done"),
+            ("Yes", "Stock take done"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "Yes":
+            print(self.value())
+            print(queryset.filter(stock_take_done=True))
+            return queryset.filter(stock_take_done=True)
+        elif self.value() == 'No':
+            return queryset.filter(stock_take_done=False)
 
 # class NoArrowsNumberInput(forms.widgets.NumberInput):
 #     template_name = "admin/widgets/no_arrows_number_input.html"
@@ -44,15 +63,17 @@ class ModleAdmin(admin.ModelAdmin):
         "cost",
         "reorder_level",
         "new_arrival",
+        "stock_take_done"
     )
 
     search_fields = (
         "product_code",
         "product_name",
         "quantity_in_stock",
+        "stock_take_done"
     )
     order_by = "created_at"
-    list_filter = (NewStockFilter,)
+    list_filter = (NewStockFilter,StockTakeFilter)
 
     # formfield_overrides = {
     #     model.IntegerField: {"widget": NoArrowsNumberInput},
