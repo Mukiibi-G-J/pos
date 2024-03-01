@@ -19,10 +19,11 @@ from django.db.models import (
     Sum,
     DateField,
     CharField,
-    FloatField
+    FloatField,
+    DecimalField,
 )
 from django.db.models.functions import Trunc, Cast, TruncDate
-from django.db.models  import Q
+from django.db.models import Q
 
 
 from django.template.loader import render_to_string
@@ -66,8 +67,12 @@ def dashboard(request):
         "total_cost"
     ]
 
-    total_stock_cost = Products.objects.filter(stock_take_done=True).annotate(new__stock= Cast('new_stock', FloatField())).aggregate(purchase_cost= Sum(F("unit_price") * F(("quantity_in_stock"))))
-    print(total_stock_cost )
+    total_stock_cost = (
+        Products.objects.filter(stock_take_done=True)
+        .annotate(new__stock=Cast("new_stock", FloatField()))
+        .aggregate(purchase_cost=Sum(F("unit_price") * F(("quantity_in_stock"))))
+    )
+    print(total_stock_cost)
     total_no_of_products = Products.objects.all().count()
     total_no_of_sales = Sales.objects.all().count()
     # sales_of_yesterday = Sales.objects.filter(
@@ -118,7 +123,7 @@ def dashboard(request):
         "total_no_of_sales": total_no_of_sales,
         "total_cost_of_sales": formatted_total_cost_of_sales,
         "top_selling_products": top_selling_products,
-        "total_stock_cost": format(int(total_stock_cost['purchase_cost']), ",d"),
+        "total_stock_cost": format(int(total_stock_cost["purchase_cost"]), ",d"),
     }
     return render(request, "dashboard/dashboard.html", context)
 
@@ -148,20 +153,19 @@ def get_single_product(request, pk):
     # if request.method == "GET"
     prod_id = str(pk)
     print(prod_id)
-    
+
     # Assuming 'id' is the field in your Products model that you want to filter on
     product = get_object_or_404(Products, id=prod_id)
     product_data = {
-        'product_name': product.product_name,
-        'unit_price': product.unit_price,
-        'cost': product.cost,
-        'quantity_in_stock': product.quantity_in_stock,
-        'new_stock': product.new_stock,
+        "product_name": product.product_name,
+        "unit_price": product.unit_price,
+        "cost": product.cost,
+        "quantity_in_stock": product.quantity_in_stock,
+        "new_stock": product.new_stock,
     }
 
     print(product_data)
     return JsonResponse(product_data)
-    
 
 
 @login_required
@@ -227,6 +231,7 @@ def add_single_product(request):
             reorder_level=reorder_level,
             description=description,
             product_code=product_code,
+            stock_take_done=True,
             # product_image=product_image,
         )
         return redirect("products:product_list")
@@ -249,6 +254,7 @@ def add_single_sell(request):
         quantity = int(data["quantity"])
         price = int(data["price"])
         product = Products.objects.get(product_code=product_uuid)
+        product.stock_take_done = True
         total_price = (int(price) * int(quantity)) - int(discount)
         print(total_price, discount)
         Sales.objects.create(
@@ -283,7 +289,9 @@ class AddSale(generic.View):
         res = None
 
         # qs = Products.objects.filter(product_name__icontains=name or product_code__icontains=name)
-        qs = Products.objects.filter(Q(product_name__icontains=name) | Q(product_code__icontains=name))
+        qs = Products.objects.filter(
+            Q(product_name__icontains=name) | Q(product_code__icontains=name)
+        )
 
         data = []
         print(qs)
@@ -993,9 +1001,93 @@ def reports(request):
     )
 
 
+def daily_profit(request):
+    # Sales.objects.annotate(week_start=TruncWeek("timestamp"))
+    #     .values("week_start")
+    #     .annotate(
+    #         total_profit=Sum((F("price") - F("current_cost_price")) * F("quantity"))
+    #         # total_profit=Sum(
+    #         # (F("price") - F("current_cost_price")) * F("quantity") - F("discount") * F("quantity")
+    #         # )
+    #     )
+    #     .order_by("week_start")
+
+    # daily_profit = (
+    #     Sales.objects.annotate(day=TruncDate("timestamp"))
+    #     .values("day")
+    #     .annotate(
+    #         total_profit=Sum(
+    #             ExpressionWrapper(
+    #                 (F("price") - F("current_cost_price")) * F("quantity"),
+    #                 output_field=DecimalField(),
+    #             )
+    #         )
+    #     )
+    #     .order_by("day")
+    # )
+    # total_profit_per_day = {}
+    # for item in daily_profit:
+    #     total_profit_per_day[item["day"]] = item["total_profit"]
+
+    # print(total_profit_per_day)
+    # Calculate the daily profit and list all products sold with their individual profits
+    daily_sales = (
+        Sales.objects.annotate(day=TruncDate("timestamp"))
+        .values("day", "product")
+        .annotate(
+            profit=ExpressionWrapper(
+                (F("price") - F("current_cost_price")) * F("quantity"),
+                output_field=DecimalField(),
+            )
+        )
+        .order_by("day", "product")
+        .annotate(product_name=F("product__product_name"))
+    )
+
+    # Calculate the total profit for each day
+    total_profit_per_day = {}
+    for item in daily_sales:
+        item['day'] = item['day'].strftime("%Y/%m/%d")
+        day = item["day"]
+        profit = item["profit"]
+        total_profit_per_day[day] = total_profit_per_day.get(day, 0), + profit,
+        # total_profit_per_day = total_profit_per_day.get(day, 0), + profit,
+
+    # Print the daily sales with individual profits and total profit for each day
+    for item in daily_sales:
+        print(
+            f"Day: {item['day']} | Product: {item['product_name']} | Profit: {item['profit']} | Total:{total_profit_per_day}"
+        )
+        # If you want to save this data, you can store it in a list or dictionary
+
+    print("\nTotal Profit per Day:")
+    for day, total_profit in total_profit_per_day.items():
+        print(f"Day: {day} | Total Profit: {total_profit}")
+    current_month = datetime.datetime.now().replace(day=1)
+    total_profit_for_month = Sales.objects.filter(
+        timestamp__month=current_month.month
+    ).aggregate(
+        total_profit=Sum(
+            ExpressionWrapper(
+                (F("price") - F("current_cost_price")) * F("quantity"),
+                output_field=DecimalField(),
+            )
+        )
+    )[
+        "total_profit"
+    ]
+
+    context = {
+        "daily_sales": daily_sales,
+        "total_profit_per_day": total_profit_per_day,
+        "total_profit_for_month": total_profit_for_month,
+    }
+    print(context)
+    return render(request, "reports/daily_profit.html", context)
+
+
 def get_profit_for_single_date(request, pk):
-    print(pk)
-    return "hello"
+    pass
 
 
 # ?  ----------export to excel----------------

@@ -5,6 +5,7 @@ from django.utils import timezone
 import datetime
 from django.core.exceptions import ValidationError
 from mptt.models import TreeForeignKey, MPTTModel
+from django import forms
 
 
 class Supplier(models.Model):
@@ -101,7 +102,11 @@ class Products(models.Model):
 
     def __Str__(self):
         return self.product_name
-
+    
+    def get_form(self, *args, **kwargs):
+        form = super().get_form(*args, **kwargs)
+        form.base_fields['quantity_in_stock'].widget = forms.TextInput()
+        return form
 
 class Order(models.Model):
     product = models.ForeignKey(Products, on_delete=models.CASCADE)

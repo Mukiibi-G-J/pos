@@ -295,15 +295,15 @@
               </a>
             </li>
             <li class="">
-              <a href="../backend/page-add-return.html">
-                <i class="las la-minus"></i><span>Add Return</span>
+              <a href="{% url 'products:daily_profit' %}">
+                <i class="las la-minus"></i><span>Daily Profit</span>
               </a>
             </li>
           </ul>
         </li>
 
         <li class="">
-          <a href= "{% url 'products:reports' %}" class="">
+          <a href="{% url 'products:reports' %}" class="">
             <svg
               class="svg-icon"
               id="p-dash7"
@@ -390,7 +390,10 @@
               </a>
             </li>
             <li class="">
-              <a href="{% url 'products:add_single_sell' %}" id="add_sales_link">
+              <a
+                href="{% url 'products:add_single_sell' %}"
+                id="add_sales_link"
+              >
                 <i class="las la-minus"></i><span>Add Single Sale</span>
               </a>
             </li>
