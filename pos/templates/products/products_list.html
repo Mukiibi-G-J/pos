@@ -37,44 +37,60 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form>
-                                    <div class="form-row mt-4">
+                                <form method="POST" action={% url 'products:add_single_product' %}>
+                                    {% csrf_token %}
+                                       <div class="form-row mt-4">
+                                           <div class="col">
+                                            <label> Name</label>
+                                               {% render_field products_form.product_name class="form-control" %}
+                                           </div>
+                                           <div class="col">
+                                               {% render_field products_form.unit_id class="form-control" %}
+                       
+                                           </div>
+                                       </div>
+                                       <div class="form-row mt-4 ">
+                                           <div class="col">
+                                            <label> Category</label>
+                                               {% render_field products_form.category_id class="form-control" %}
+                                           </div>
+                                           <div class="col">
+                                            <label> BRAND</label>
+                                               {% render_field products_form.brand class="form-control" %}
+                                           </div>
+                                       </div>
+                                       <div class="form-row mt-4">
+                       
+                                           <div class="col">
+                                        <label>Cost *</label>
+                       
+                                               {% render_field products_form.unit_price class="form-control" %}
+                                           </div>
+                                           <div class="col">
+                                            <label>Selling Price *</label>
+                       
+                                               {% render_field products_form.cost class="form-control" %}
+                                           </div>
+                                       </div>
+                                       <div class="form-row mt-4">
                                         <div class="col">
-                                            {% render_field products_form.product_name class="form-control" %}
-                                        </div>
-                                        <div class="col">
-                                            {% render_field products_form.unit_id class="form-control" %}
-
-                                        </div>
+                                          <label>Quantity *</label>
+                                          {% render_field products_form.quantity_in_stock class="form-control" %}
+                                      </div>
+                                            <div class="col">
+                                              <label>Supplier *</label>
+                                              {% render_field products_form.supplier class="form-control" %}
+                                          </div>
+                                          
+                       
+                                       </div>
+                                       <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary" >Save changes</button>
                                     </div>
-                                    <div class="form-row mt-4 ">
-                                        <div class="col">
-                                            {% render_field products_form.category_id class="form-control" %}
-                                        </div>
-                                        <div class="col">
-                                            {% render_field products_form.brand class="form-control" %}
-                                        </div>
-                                    </div>
-                                    <div class="form-row mt-4">
-                                        <div class="col">
-                                            {% render_field products_form.unit_price class="form-control" %}
-                                        </div>
-                                        <div class="col">
-                                            {% render_field products_form.cost class="form-control" %}
-                                        </div>
-                                    </div>
-                                    <div class="form-row mt-4">
-                                        <div class="col">
-                                            {% render_field products_form.reorder_level class="form-control" %}
-                                        </div>
-
-                                    </div>
-                                </form>
+                                   </form>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
-                            </div>
+                           
                         </div>
                     </div>
                 </div>
@@ -255,67 +271,59 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="" method="POST" data-toggle="validator"
-                          enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="row">
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>Name *</label>
-
-                                    {{ products_form.product_name }}
-                                    <div class="help-block with-errors"></div>
+                    <div class="modal-body">
+                        <form method="POST" action={% url 'products:add_single_product' %}>
+                         {% csrf_token %}
+                            <div class="form-row mt-4">
+                                <div class="col">
+                                 <label> Name</label>
+                                    {% render_field products_form.product_name class="form-control" %}
+                                </div>
+                                <div class="col">
+                                    {% render_field products_form.unit_id class="form-control" %}
+            
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>Cost Price</label>
-
-                                    {{ products_form.unit_price }}
-                                    <div class="help-block with-errors"></div>
+                            <div class="form-row mt-4 ">
+                                <div class="col">
+                                 <label> Category</label>
+                                    {% render_field products_form.category_id class="form-control" %}
+                                </div>
+                                <div class="col">
+                                 <label> BRAND</label>
+                                    {% render_field products_form.brand class="form-control" %}
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>selling Price</label>
-
-                                    {{ products_form.cost }}
-                                    <div class="help-block with-errors"></div>
+                            <div class="form-row mt-4">
+            
+                                <div class="col">
+                             <label>Cost *</label>
+            
+                                    {% render_field products_form.unit_price class="form-control" %}
+                                </div>
+                                <div class="col">
+                                 <label>Selling Price *</label>
+            
+                                    {% render_field products_form.cost class="form-control" %}
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>Current Stock</label>
-
-                                    {{ products_form.quantity_in_stock }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
+                            <div class="form-row mt-4">
+                             <div class="col">
+                               <label>Quantity *</label>
+                               {% render_field products_form.quantity_in_stock class="form-control" %}
+                           </div>
+                                 <div class="col">
+                                   <label>Supplier *</label>
+                                   {% render_field products_form.supplier class="form-control" %}
+                               </div>
+                               
+            
                             </div>
-                        </div>
-                        
-                        <div class="row">
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>New Stock</label>
-
-                                    {{ products_form.new_stock }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </form>
+                            <div class="modal-footer">
+                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                             <button type="submit" class="btn btn-primary" >Save changes</button>
+                         </div>
+                        </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -329,3 +337,20 @@
 {% endblock content %}
 <!-- DATA TABLE SCRIPTS -->
 
+ {% comment %} -------------------------------- Modal POP UP -------------- {% endcomment %}
+ <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+ aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        
+        </div>
+        
+    </div>
+</div>
+</div>

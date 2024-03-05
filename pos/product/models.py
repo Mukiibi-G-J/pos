@@ -175,6 +175,10 @@ class Sales(models.Model):
                 self.stock_left = self.product.quantity_in_stock
                 self.current_cost_price = self.product.unit_price
                 self.product.save()
+        else:
+            quantity_in_stock = self.product.quantity_in_stock 
+            print(self.product.quantity_in_stock)
+
 
         super(Sales, self).save(*args, **kwargs)
 
