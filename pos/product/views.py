@@ -46,6 +46,8 @@ import uuid
 import uuid
 from django.conf import settings
 import os
+from django.db.models.functions import TruncMonth
+from collections import defaultdict
 
 
 def is_admin(user):
@@ -1087,8 +1089,38 @@ def daily_profit(request):
 
 
 def get_profit_for_single_date(request, pk):
+
     pass
 
+
+
+def get_month_profit():
+
+    monthly_profit = defaultdict(dict)
+
+    # Assuming Sales model has 'price', 'current_cost_price', 'quantity', 'product', and 'timestamp' fields
+    daily_sales = (
+        Sales.objects.annotate(month=TruncMonth("timestamp"))
+        .values("month", "product")
+        .annotate(
+            profit=ExpressionWrapper(
+                (F("price") - F("current_cost_price")) * F("quantity"),
+                output_field=DecimalField(),
+            )
+        )
+        .order_by("month", "product")
+        .annotate(product_name=F("product__product_name"))
+    )
+
+    for sale in daily_sales:
+        month = sale["month"].strftime("%Y-%m")
+        if month not in monthly_profit:
+            monthly_profit[month] = {}
+        if sale["product_name"] not in monthly_profit[month]:
+            monthly_profit[month][sale["product_name"]] = 0
+        monthly_profit[month][sale["product_name"]] += sale["profit"]
+
+    print(dict(monthly_profit))
 
 # ?  ----------export to excel----------------
 
