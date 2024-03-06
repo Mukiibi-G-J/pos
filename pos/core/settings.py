@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     #! My apps
     "authentication",
     "product",
+    "financial",
     #! Third party apps
     "widget_tweaks",
     "django_htmx",
