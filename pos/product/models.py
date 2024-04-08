@@ -14,7 +14,6 @@ class Supplier(models.Model):
     def __str__(self):
         return self.name
 
-
 class Brand(models.Model):
     brand_name = models.CharField(max_length=255)
 
@@ -190,7 +189,6 @@ class Purchases(models.Model):
     purchase_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
-
     
     
     def __str__(self):

@@ -42,12 +42,14 @@ INSTALLED_APPS = [
     "authentication",
     "product",
     "financial",
+    "api",
     #! Third party apps
     "widget_tweaks",
     "django_htmx",
     "django.contrib.humanize",  # ? for humanize numbers in templates (1,000,000)
     "django_select2",
     "mptt",
+    "rest_framework"
 ]
 
 MIDDLEWARE = [
