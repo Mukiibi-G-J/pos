@@ -59,7 +59,8 @@ urlpatterns = [
         "get_single_product/<str:pk>/",
         views.get_single_product,
         name="update_product",
-    ),path("daily_profit", views.daily_profit, name="daily_profit")
+    ),path("daily_profit", views.daily_profit, name="daily_profit"),
+    path("month_profit", views.get_month_profit, name="month_profit"),
 ]
 
 # htmx

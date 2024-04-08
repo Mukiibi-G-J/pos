@@ -1094,33 +1094,57 @@ def get_profit_for_single_date(request, pk):
 
 
 
-def get_month_profit():
+def get_month_profit(request):
 
     monthly_profit = defaultdict(dict)
 
     # Assuming Sales model has 'price', 'current_cost_price', 'quantity', 'product', and 'timestamp' fields
-    daily_sales = (
-        Sales.objects.annotate(month=TruncMonth("timestamp"))
-        .values("month", "product")
-        .annotate(
-            profit=ExpressionWrapper(
-                (F("price") - F("current_cost_price")) * F("quantity"),
-                output_field=DecimalField(),
+    # daily_sales = (
+    #     Sales.objects.annotate(month=TruncMonth("timestamp"))
+    #     .values("month", "product")
+    #     .annotate(
+    #         profit=ExpressionWrapper(
+    #             (F("price") - F("current_cost_price")) * F("quantity"),
+    #             output_field=DecimalField(),
+    #         )
+    #     )
+    #     .order_by("month", "product")
+    #     .annotate(product_name=F("product__product_name"))
+    # )
+
+    # for sale in daily_sales:
+    #     month = sale["month"].strftime("%Y-%m")
+    #     if month not in monthly_profit:
+    #         monthly_profit[month] = {}
+    #     if sale["product_name"] not in monthly_profit[month]:
+    #         monthly_profit[month][sale["product_name"]] = 0
+    #     monthly_profit[month][sale["product_name"]] += sale["profit"]
+
+    # context = {
+
+    # 'monthly_profit': monthly_profit
+    # }
+    # print(dict(monthly_profit))
+    monthly_profits = (
+    Sales.objects.annotate(month=TruncMonth("timestamp"))
+            .values("month")
+            .annotate(
+            total_profit=Sum(
+                ExpressionWrapper(
+                    (F("price") - F("current_cost_price")) * F("quantity"),
+                    output_field=DecimalField(),
+                )
             )
-        )
-        .order_by("month", "product")
-        .annotate(product_name=F("product__product_name"))
     )
+    .order_by("month")
+    )
+    # return render(request, 'reports/month_profit.html', context)
 
-    for sale in daily_sales:
-        month = sale["month"].strftime("%Y-%m")
-        if month not in monthly_profit:
-            monthly_profit[month] = {}
-        if sale["product_name"] not in monthly_profit[month]:
-            monthly_profit[month][sale["product_name"]] = 0
-        monthly_profit[month][sale["product_name"]] += sale["profit"]
 
-    print(dict(monthly_profit))
+    return render(request, 'reports/month_profit.html', {'monthly_profits': monthly_profits})
+
+
+    
 
 # ?  ----------export to excel----------------
 
