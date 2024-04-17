@@ -160,4 +160,8 @@ LOGIN_URL = "authentication:login"
 AUTH_USER_MODEL = "authentication.CustomUser"
 
 
-CORS_ALLOWED_ORIGINS = ["*"]
+CORS_ALLOWED_ORIGINS = [
+    "http://*",
+    "https://*",
+    # Add other allowed origins as needed
+]
