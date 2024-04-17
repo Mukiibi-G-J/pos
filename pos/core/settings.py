@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     "django.contrib.humanize",  # ? for humanize numbers in templates (1,000,000)
     "django_select2",
     "mptt",
-    "rest_framework"
+    "rest_framework",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -58,6 +59,7 @@ MIDDLEWARE = [
     # third patry
     "django_htmx.middleware.HtmxMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -135,7 +137,7 @@ APPEND_SLASH = False
 
 
 STATIC_URL = "static_files/"
-STATIC_ROOT = BASE_DIR / 'static_files'
+STATIC_ROOT = BASE_DIR / "static_files"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
@@ -156,3 +158,6 @@ LOGIN_URL = "authentication:login"
 
 
 AUTH_USER_MODEL = "authentication.CustomUser"
+
+
+CORS_ALLOWED_ORIGINS = ["*"]
